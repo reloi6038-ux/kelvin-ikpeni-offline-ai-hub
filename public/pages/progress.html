@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#0f2027">
+  <title>Progress — Kelvin Hub</title>
+  <link rel="manifest" href="/manifest.json">
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="stylesheet" href="/css/dashboard.css">
+  <style>
+    .chart-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: var(--space-4);
+      margin-bottom: var(--space-3);
+    }
+    .chart-card h3 { margin: 0 0 var(--space-3); font-size: 1rem; }
+    .bar-row {
+      display: grid;
+      grid-template-columns: 80px 1fr 50px;
+      gap: var(--space-2);
+      align-items: center;
+      font-size: 0.85rem;
+      margin-bottom: var(--space-2);
+    }
+    .bar-track {
+      height: 10px;
+      background: var(--surface-alt);
+      border-radius: 999px;
+      overflow: hidden;
+    }
+    .bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--brand-teal), var(--brand-accent));
+      border-radius: 999px;
+    }
+    .bar-value { text-align: right; font-weight: 600; }
+    .trend-svg { width: 100%; height: 120px; }
+    .trend-line { fill: none; stroke: var(--brand-accent); stroke-width: 2; }
+    .trend-dot  { fill: var(--brand-deep); }
+    .trend-grid { stroke: var(--border); stroke-width: 1; }
+    .empty-chart { text-align: center; color: var(--text-muted); padding: var(--space-4); font-size: 0.9rem; }
+  </style>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <header class="site-header">
+    <div class="container">
+      <a href="/" class="brand" aria-label="Kelvin Hub — home">
+        <span class="brand-mark" aria-hidden="true">K</span>
+        <span>Kelvin Hub</span>
+      </a>
+      <button class="nav-toggle" aria-label="Toggle navigation" aria-expanded="false" id="nav-toggle">☰</button>
+      <nav class="main-nav" id="main-nav" aria-label="Primary navigation">
+        <a href="/pages/dashboard.html">Dashboard</a>
+        <a href="/pages/progress.html" aria-current="page">Progress</a>
+        <a href="/pages/download-center.html">Offline Packs</a>
+        <a href="/pages/ai-tutor.html">AI Tutor</a>
+        <a href="/pages/offline-library.html">My Library</a>
+        <a href="/pages/help.html">Help</a>
+      </nav>
+      <span id="connection-badge" class="badge badge-online" role="status" aria-live="polite">
+        <span class="dot"></span> Online
+      </span>
+    </div>
+  </header>
+
+  <main id="main">
+    <div class="page-hero">
+      <div class="container">
+        <h1>Detailed Progress</h1>
+        <p class="page-lede">Every attempt, every score, every trend — all computed offline from your device.</p>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="container">
+        <div id="progress-loading" class="state-loading">
+          <div class="spinner" aria-hidden="true"></div>
+          <p>Loading your progress…</p>
+        </div>
+
+        <div id="progress-empty" class="state-empty" hidden>
+          <div class="empty-illustration" aria-hidden="true">📊</div>
+          <h2>No quiz attempts yet</h2>
+          <p>Take a quiz to start tracking your progress.</p>
+          <a href="/pages/quizzes.html" class="btn btn-primary">Take a quiz</a>
+        </div>
+
+        <div id="progress-content" hidden>
+          <div class="stats-strip" style="margin-bottom:var(--space-4)">
+            <div class="stat-tile"><div class="stat-tile-icon">📝</div><div><div class="stat-tile-value" id="p-attempts">0</div><div class="stat-tile-label">Total attempts</div></div></div>
+            <div class="stat-tile"><div class="stat-tile-icon">🎯</div><div><div class="stat-tile-value" id="p-avg">—</div><div class="stat-tile-label">Average score</div></div></div>
+            <div class="stat-tile"><div class="stat-tile-icon">🏆</div><div><div class="stat-tile-value" id="p-best">—</div><div class="stat-tile-label">Best score</div></div></div>
+            <div class="stat-tile"><div class="stat-tile-icon">📈</div><div><div class="stat-tile-value" id="p-trend">—</div><div class="stat-tile-label">Trend vs last 5</div></div></div>
+          </div>
+
+          <div class="chart-card">
+            <h3>Score trend over time</h3>
+            <div id="trend-chart"></div>
+          </div>
+
+          <div class="chart-card">
+            <h3>Performance by quiz</h3>
+            <div id="per-quiz"></div>
+          </div>
+
+          <div class="chart-card">
+            <h3>Score distribution</h3>
+            <div id="distribution"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-bottom" style="border-top:none;padding-top:0">
+        <span>© <span id="year"></span> Kelvin Ikpeni Offline AI Learning Hub</span>
+        <span>Progress computed from local device data.</span>
+      </div>
+    </div>
+  </footer>
+
+  <div class="floating-controls" aria-label="Quick settings">
+    <button id="data-saver-toggle" class="toggle-pill" aria-pressed="false" title="Reduce data usage">
+      <span class="dot" aria-hidden="true"></span> Data Saver
+    </button>
+    <button id="demo-offline-toggle" class="toggle-pill" aria-pressed="false" title="Simulate offline for demo">
+      <span class="dot" aria-hidden="true"></span> Demo Offline
+    </button>
+  </div>
+
+  <script src="/js/app.js"></script>
+  <script src="/js/offline-db.js"></script>
+  <script src="/js/connectivity.js"></script>
+  <script>
+    (async function () {
+      const loading = document.getElementById('progress-loading');
+      const empty = document.getElementById('progress-empty');
+      const content = document.getElementById('progress-content');
+
+      if (!window.KH_DB) {
+        loading.hidden = true;
+        empty.hidden = false;
+        return;
+      }
+
+      const attempts = await KH_DB.getAll('attempts');
+      const quizzes = await KH_DB.getAll('quizzes');
+      loading.hidden = true;
+
+      if (attempts.length === 0) {
+        empty.hidden = false;
+        return;
+      }
+
+      content.hidden = false;
+      const percents = attempts.map(a => a.serverResponse && a.serverResponse.percent != null ? a.serverResponse.percent : (a.localPercent || 0));
+      const avg = Math.round(percents.reduce((s, p) => s + p, 0) / percents.length);
+      const best = Math.max(...percents);
+
+      // Sort attempts by time for trend
+      const sorted = attempts.slice().sort((a, b) =>
+        new Date(a.clientTimestamp || a.savedAt || 0) - new Date(b.clientTimestamp || b.savedAt || 0));
+      const recent5 = sorted.slice(-5).map(a => a.serverResponse?.percent ?? a.localPercent ?? 0);
+      const prev5 = sorted.slice(-10, -5).map(a => a.serverResponse?.percent ?? a.localPercent ?? 0);
+      let trend = '—';
+      if (recent5.length && prev5.length) {
+        const recentAvg = recent5.reduce((s, v) => s + v, 0) / recent5.length;
+        const prevAvg = prev5.reduce((s, v) => s + v, 0) / prev5.length;
+        const diff = Math.round(recentAvg - prevAvg);
+        trend = diff > 0 ? `+${diff}%` : `${diff}%`;
+      }
+
+      document.getElementById('p-attempts').textContent = String(attempts.length);
+      document.getElementById('p-avg').textContent = avg + '%';
+      document.getElementById('p-best').textContent = best + '%';
+      document.getElementById('p-trend').textContent = trend;
+
+      // Trend chart
+      const chartEl = document.getElementById('trend-chart');
+      if (sorted.length >= 2) {
+        const W = 400, H = 100, PAD = 10;
+        const stepX = (W - 2 * PAD) / (sorted.length - 1);
+        const points = sorted.map((a, i) => {
+          const p = a.serverResponse?.percent ?? a.localPercent ?? 0;
+          return [PAD + i * stepX, H - PAD - (p / 100) * (H - 2 * PAD)];
+        });
+        const path = 'M' + points.map(([x, y]) => `${x},${y}`).join(' L');
+        const dots = points.map(([x, y]) => `<circle cx="${x}" cy="${y}" r="3" class="trend-dot"/>`).join('');
+        chartEl.innerHTML = `
+          <svg class="trend-svg" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none">
+            <line x1="${PAD}" y1="${H/2}" x2="${W-PAD}" y2="${H/2}" class="trend-grid" stroke-dasharray="3,3"/>
+            <path d="${path}" class="trend-line"/>
+            ${dots}
+          </svg>
+          <p class="text-sm text-muted" style="text-align:center;margin-top:4px">${sorted.length} attempts</p>
+        `;
+      } else {
+        chartEl.innerHTML = '<p class="empty-chart">Take at least 2 quizzes to see a trend.</p>';
+      }
+
+      // Per-quiz performance
+      const perQuiz = new Map();
+      for (const a of attempts) {
+        const q = quizzes.find(x => x.id === a.quizId);
+        const name = q ? q.title : 'Quiz';
+        const p = a.serverResponse?.percent ?? a.localPercent ?? 0;
+        if (!perQuiz.has(name)) perQuiz.set(name, []);
+        perQuiz.get(name).push(p);
+      }
+      const perQuizEl = document.getElementById('per-quiz');
+      if (perQuiz.size === 0) {
+        perQuizEl.innerHTML = '<p class="empty-chart">No quiz data available.</p>';
+      } else {
+        perQuizEl.innerHTML = [...perQuiz.entries()].map(([name, scores]) => {
+          const a = Math.round(scores.reduce((s, v) => s + v, 0) / scores.length);
+          return `<div class="bar-row">
+            <span style="font-size:0.8rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(name)}</span>
+            <div class="bar-track"><div class="bar-fill" style="width:${a}%"></div></div>
+            <span class="bar-value">${a}%</span>
+          </div>`;
+        }).join('');
+      }
+
+      // Distribution
+      const buckets = { great: 0, ok: 0, low: 0 };
+      for (const p of percents) {
+        if (p >= 70) buckets.great++;
+        else if (p >= 40) buckets.ok++;
+        else buckets.low++;
+      }
+      const total = percents.length;
+      const distEl = document.getElementById('distribution');
+      const distData = [
+        { label: 'Great (≥70%)', value: buckets.great, color: 'var(--success)' },
+        { label: 'OK (40-69%)', value: buckets.ok, color: 'var(--warning)' },
+        { label: 'Needs work (<40%)', value: buckets.low, color: 'var(--danger)' }
+      ];
+      distEl.innerHTML = distData.map(d => `
+        <div class="bar-row">
+          <span style="font-size:0.8rem">${d.label}</span>
+          <div class="bar-track"><div class="bar-fill" style="width:${total > 0 ? (d.value / total * 100) : 0}%;background:${d.color}"></div></div>
+          <span class="bar-value">${d.value}</span>
+        </div>
+      `).join('');
+
+      function esc(s) {
+        return String(s || '').replace(/[&<>"']/g, (c) => ({
+          '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+        }[c]));
+      }
+    })();
+  </script>
+</body>
+</html>

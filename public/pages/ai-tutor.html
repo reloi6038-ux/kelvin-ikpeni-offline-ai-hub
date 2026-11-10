@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#0f2027">
+  <title>AI Tutor — Kelvin Hub</title>
+  <link rel="manifest" href="/manifest.json">
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="stylesheet" href="/css/tutor.css">
+  <link rel="stylesheet" href="/css/voice.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <header class="site-header">
+    <div class="container">
+      <a href="/" class="brand" aria-label="Kelvin Hub — home">
+        <span class="brand-mark" aria-hidden="true">K</span>
+        <span>Kelvin Hub</span>
+      </a>
+      <button class="nav-toggle" aria-label="Toggle navigation" aria-expanded="false" id="nav-toggle">☰</button>
+      <nav class="main-nav" id="main-nav" aria-label="Primary navigation">
+        <a href="/pages/dashboard.html">Dashboard</a>
+        <a href="/pages/courses.html">Courses</a>
+        <a href="/pages/download-center.html">Offline Packs</a>
+        <a href="/pages/ai-tutor.html" aria-current="page">AI Tutor</a>
+        <a href="/pages/offline-library.html">My Library</a>
+        <a href="/pages/help.html">Help</a>
+      </nav>
+      <span id="connection-badge" class="badge badge-online" role="status" aria-live="polite">
+        <span class="dot"></span> Online
+      </span>
+    </div>
+  </header>
+
+  <main id="main">
+    <!-- HERO -->
+    <section class="at-hero">
+      <div class="container">
+        <div class="at-hero-inner">
+          <span class="at-hero-eyebrow">✨ AI Tutor</span>
+          <h1 class="at-hero-title">
+            Ask anything. <span class="at-hero-title-accent">Learn everything.</span>
+          </h1>
+          <p class="at-hero-sub">
+            Your tutor answers from the lesson you downloaded. Works fully offline. Never makes things up — if it's not in the lesson, it says so.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- LOADING -->
+    <div id="tutor-loading" class="at-loading">
+      <div class="at-spinner" aria-hidden="true"></div>
+      <p>Loading your lessons…</p>
+    </div>
+
+    <!-- EMPTY -->
+    <div id="tutor-empty" class="at-empty" hidden>
+      <div class="at-empty-icon" aria-hidden="true">📚</div>
+      <h2 class="at-empty-title">No lessons downloaded yet</h2>
+      <p class="at-empty-text">Download a learning pack first so the tutor has something to teach you.</p>
+      <a class="btn btn-primary" href="/pages/download-center.html">Browse packs</a>
+    </div>
+
+    <!-- SHELL -->
+    <div id="tutor-shell" class="at-shell-wrap" hidden>
+      <div class="at-shell">
+        <!-- Sidebar -->
+        <aside class="at-sidebar" aria-label="Choose a lesson">
+          <div class="at-sidebar-head">
+            <h2 class="at-sidebar-title">Your lessons</h2>
+            <span class="at-sidebar-count" id="lesson-count">0</span>
+          </div>
+          <div class="at-sidebar-search">
+            <svg class="at-sidebar-search-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <circle cx="11" cy="11" r="8"></circle>
+              <path d="m21 21-4.35-4.35"></path>
+            </svg>
+            <input type="search" id="lesson-search" placeholder="Filter lessons…" autocomplete="off">
+          </div>
+          <div class="at-lesson-list" id="lesson-list"></div>
+        </aside>
+
+        <!-- Main panel -->
+        <section class="at-main" aria-label="Tutor conversation">
+          <div class="at-main-head" id="main-head">
+            <div class="at-main-head-empty" id="main-head-empty">
+              <div class="at-lesson-badge" aria-hidden="true">👋</div>
+              <div class="at-main-titles">
+                <h2 class="at-main-title">Pick a lesson to get started</h2>
+                <p class="at-main-sub">Select any lesson from the left sidebar</p>
+              </div>
+            </div>
+            <div class="at-main-head-active" id="main-head-active" hidden>
+              <div class="at-lesson-badge" aria-hidden="true">📖</div>
+              <div class="at-main-titles">
+                <h2 class="at-main-title" id="active-lesson-title">—</h2>
+                <p class="at-main-sub" id="active-lesson-meta">—</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Empty state (before lesson selected) -->
+          <div class="at-empty-hero" id="main-empty-hero">
+            <div class="at-empty-icon" aria-hidden="true">✨</div>
+            <h2 class="at-empty-title">Select a lesson to begin</h2>
+            <p class="at-empty-sub">Once you pick a lesson, you can ask the tutor to explain it, give examples, or quiz you — using only what's in that lesson.</p>
+          </div>
+
+          <!-- Conversation -->
+          <div class="at-conversation" id="conversation" hidden></div>
+
+          <!-- Input bar -->
+          <div class="at-input-bar" id="input-bar" hidden>
+            <div class="at-input-wrap">
+              <textarea class="at-input" id="tutor-question" placeholder="Ask anything about this lesson…" rows="1" maxlength="400" disabled></textarea>
+              <button class="voice-mic-btn" id="tutor-mic" aria-label="Ask by voice" title="Ask by voice" style="width:46px;height:46px">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:20px;height:20px">
+                  <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
+                  <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+                  <line x1="12" y1="19" x2="12" y2="23"/>
+                  <line x1="8" y1="23" x2="16" y2="23"/>
+                </svg>
+              </button>
+              <button class="at-send-btn" id="tutor-ask-btn" disabled>
+                Ask →
+              </button>
+            </div>
+            <p class="voice-status" id="tutor-voice-status" aria-live="polite"></p>
+            <p class="at-input-hint">Answers come from your downloaded lesson. Press Enter to send · Shift+Enter for a new line.</p>
+          </div>
+        </section>
+      </div>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-bottom" style="border-top:none;padding-top:0">
+        <span>© <span id="year"></span> Kelvin Ikpeni Offline AI Learning Hub</span>
+        <span>Curriculum-grounded · Verified · Safe</span>
+      </div>
+    </div>
+  </footer>
+
+  <div class="floating-controls" aria-label="Quick settings">
+    <button id="data-saver-toggle" class="toggle-pill" aria-pressed="false" title="Reduce data usage">
+      <span class="dot" aria-hidden="true"></span> Data Saver
+    </button>
+    <button id="demo-offline-toggle" class="toggle-pill" aria-pressed="false" title="Simulate offline for demo">
+      <span class="dot" aria-hidden="true"></span> Demo Offline
+    </button>
+  </div>
+
+  <script src="/js/app.js"></script>
+  <script src="/js/offline-db.js"></script>
+  <script src="/js/connectivity.js"></script>
+  <script src="/js/voice.js"></script>
+  <script src="/js/tutor.js"></script>
+</body>
+</html>

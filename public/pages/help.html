@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#0f2027">
+  <title>Help — Kelvin Hub</title>
+  <link rel="manifest" href="/manifest.json">
+  <link rel="stylesheet" href="/css/main.css">
+  <style>
+    .page-hero { background: linear-gradient(135deg, var(--brand-deep), var(--brand-teal)); color: var(--text-inverse); padding: var(--space-6) 0 var(--space-5); }
+    .page-hero h1 { font-size: clamp(1.6rem, 4vw, 2.2rem); margin: 0 0 var(--space-2); }
+    .page-lede { max-width: 55ch; color: rgba(248,250,252,.85); margin: 0; }
+    .help-section { max-width: 780px; margin: 0 auto var(--space-5); }
+    .help-section h2 { font-size: 1.25rem; margin: 0 0 var(--space-3); }
+    .help-section h3 { font-size: 1rem; margin: var(--space-4) 0 var(--space-2); }
+    .help-section p { margin: 0 0 var(--space-3); }
+    .help-section ol, .help-section ul { padding-left: var(--space-5); margin: 0 0 var(--space-3); }
+    .help-section li { margin-bottom: var(--space-2); }
+    .demo-steps { counter-reset: step; list-style: none; padding: 0; }
+    .demo-steps li { counter-increment: step; padding: var(--space-3); background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); margin-bottom: var(--space-2); position: relative; padding-left: 48px; }
+    .demo-steps li::before { content: counter(step); position: absolute; left: 12px; top: 12px; width: 24px; height: 24px; border-radius: 50%; background: var(--brand-deep); color: var(--text-inverse); display: grid; place-items: center; font-weight: 700; font-size: 0.8rem; }
+    .help-links { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+    code { font-family: var(--font-mono); background: var(--surface-alt); padding: 2px 6px; border-radius: 4px; font-size: 0.9em; }
+    details { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: var(--space-3); margin-bottom: var(--space-2); }
+    summary { font-weight: 600; cursor: pointer; }
+    details p, details ul { margin-top: var(--space-2); }
+  </style>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <header class="site-header">
+    <div class="container">
+      <a href="/" class="brand" aria-label="Kelvin Hub — home">
+        <span class="brand-mark" aria-hidden="true">K</span>
+        <span>Kelvin Hub</span>
+      </a>
+      <button class="nav-toggle" aria-label="Toggle navigation" aria-expanded="false" id="nav-toggle">☰</button>
+      <nav class="main-nav" id="main-nav" aria-label="Primary navigation">
+        <a href="/pages/dashboard.html">Dashboard</a>
+        <a href="/pages/courses.html">Courses</a>
+        <a href="/pages/download-center.html">Offline Packs</a>
+        <a href="/pages/ai-tutor.html">AI Tutor</a>
+        <a href="/pages/offline-library.html">My Library</a>
+        <a href="/pages/help.html" aria-current="page">Help</a>
+      </nav>
+      <span id="connection-badge" class="badge badge-online" role="status" aria-live="polite">
+        <span class="dot"></span> Online
+      </span>
+    </div>
+  </header>
+
+  <main id="main">
+    <section class="page-hero">
+      <div class="container">
+        <h1>Help & Project Info</h1>
+        <p class="page-lede">
+          How Kelvin Hub works, why it exists, and how to demo it.
+        </p>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container">
+        <div class="help-section">
+          <h2>🎯 What is Kelvin Hub?</h2>
+          <p>
+            Kelvin Hub is an offline-first AI-assisted learning platform for students in underserved communities.
+            Download a complete learning pack once — lessons, quizzes, AI explanations — then keep learning
+            with zero internet.
+          </p>
+          <p>
+            Built for the challenge <strong>"AI for Zero-Bandwidth & Localized Learning"</strong> under the theme
+            <strong>"AI for the Next Generation: Reimagining How Students Learn, Work & Grow"</strong>.
+          </p>
+        </div>
+
+        <div class="help-section">
+          <h2>🚀 Try the 5-minute demo</h2>
+          <ol class="demo-steps">
+            <li><strong>Download a pack.</strong> Go to <a href="/pages/download-center.html">Download Center</a> → click ⬇ on "JSS2 Mathematics Essentials" → wait for "Downloaded" badge.</li>
+            <li><strong>Toggle Demo Offline.</strong> Click the purple pill in the bottom-right corner. The header badge flips to "Demo Offline".</li>
+            <li><strong>Open My Library.</strong> Click a lesson — it reads instantly from your device.</li>
+            <li><strong>Ask the AI tutor.</strong> Click "Explain Simply" — an answer appears from the downloaded AI cache.</li>
+            <li><strong>Take a quiz.</strong> Go to <a href="/pages/quizzes.html">Quizzes</a> → answer questions → get instant feedback.</li>
+            <li><strong>Toggle Demo Offline off.</strong> Watch the pending-sync card disappear in under a second. Your attempt syncs to the server.</li>
+            <li><strong>See your dashboard.</strong> Visit <a href="/pages/dashboard.html">Dashboard</a> — streak, weak topics, and history update live.</li>
+          </ol>
+        </div>
+
+        <div class="help-section">
+          <h2>🧠 How does the AI work offline?</h2>
+          <p>
+            The AI layer is a <strong>three-tier fallback system</strong>, so it never fails and never invents facts:
+          </p>
+          <ol>
+            <li><strong>Cache</strong> — pre-generated AI responses bundled into the learning pack. Instant, works offline.</li>
+            <li><strong>Provider</strong> — when online and configured, the server calls Gemini/OpenAI/DeepSeek for a live answer.</li>
+            <li><strong>Template</strong> — deterministic responses built from the lesson's <code>keyPoints</code>. Always works, always grounded.</li>
+          </ol>
+          <p>
+            Every response is labeled with its source: <em>"From curriculum notes"</em> (yellow), <em>"AI-generated"</em> (blue), or <em>"Verified"</em> (green). Students always know what they're looking at.
+          </p>
+        </div>
+
+        <div class="help-section">
+          <h2>📱 Works offline?</h2>
+          <p>Yes. After downloading a pack once, the following work with zero network:</p>
+          <ul>
+            <li>Lesson reading</li>
+            <li>AI tutor (Explain, Examples, Practice, Summarize)</li>
+            <li>Free-form questions (keyword match fallback)</li>
+            <li>Quizzes and instant feedback</li>
+            <li>Content search</li>
+            <li>Student dashboard (streaks, weak topics, history)</li>
+            <li>Pending sync queue — auto-syncs when online</li>
+          </ul>
+          <p>The <strong>Admin dashboard</strong> requires internet — that's by design.</p>
+        </div>
+
+        <div class="help-section">
+          <h2>🔒 Privacy & Safety</h2>
+          <ul>
+            <li><strong>No accounts required</strong> for students — anonymous learning is supported.</li>
+            <li><strong>Local-first data</strong> — progress lives in IndexedDB on your device, only synced on demand.</li>
+            <li><strong>No third-party fonts, analytics, or trackers</strong> — the entire app is self-contained.</li>
+            <li><strong>AI answers show sources</strong> — students can distinguish curriculum content from AI suggestions.</li>
+            <li><strong>Template fallback never fabricates</strong> — it echoes the lesson or says "not in downloaded notes".</li>
+          </ul>
+        </div>
+
+        <div class="help-section">
+          <h2>❓ Troubleshooting</h2>
+
+          <details>
+            <summary>The page shows "404 — Page not found"</summary>
+            <p>That page hasn't been built yet. It will appear as the next build steps complete. Currently available pages:</p>
+            <ul>
+              <li><a href="/">Home</a></li>
+              <li><a href="/pages/courses.html">Courses</a></li>
+              <li><a href="/pages/ai-tutor.html">AI Tutor</a></li>
+              <li><a href="/pages/download-center.html">Download Center</a></li>
+              <li><a href="/pages/offline-library.html">My Library</a></li>
+              <li><a href="/pages/quizzes.html">Quizzes</a></li>
+              <li><a href="/pages/dashboard.html">Dashboard</a></li>
+              <li><a href="/pages/admin.html">Admin</a></li>
+              <li><a href="/pages/help.html">Help</a></li>
+            </ul>
+          </details>
+
+          <details>
+            <summary>The AI tutor doesn't respond</summary>
+            <p>Two possibilities:</p>
+            <ul>
+              <li><strong>No lessons downloaded</strong> — the tutor only works from downloaded packs. Visit Download Center and download one.</li>
+              <li><strong>No AI cache in the pack</strong> — the pack was built before AI responses were generated. Visit the Admin dashboard and click "Warm AI cache" for each lesson, then rebuild the pack.</li>
+            </ul>
+          </details>
+
+          <details>
+            <summary>My quiz attempt didn't sync</summary>
+            <p>Attempts queue in your browser's IndexedDB when offline and sync automatically when you reconnect. If sync seems stuck:</p>
+            <ul>
+              <li>Check the connection badge — is it Online?</li>
+              <li>Visit <a href="/pages/dashboard.html">Dashboard</a> — is the "Pending sync" card visible? Click "Sync now".</li>
+              <li>Open DevTools → Application → IndexedDB → <code>kelvin_hub_offline</code> → <code>attempts</code>. If items are there with <code>synced: false</code>, the sync is pending.</li>
+            </ul>
+          </details>
+
+          <details>
+            <summary>The page doesn't update when I download a pack</summary>
+            <p>Refresh the page. The Download Center reads from IndexedDB on load, and the tab that performed the download doesn't automatically refresh other tabs.</p>
+          </details>
+
+          <details>
+            <summary>The admin dashboard says "Admin API is disabled"</summary>
+            <p>The <code>ENABLE_ADMIN</code> env variable must be <code>true</code>. Add it to <code>.env</code>, restart the server.</p>
+          </details>
+        </div>
+
+        <div class="help-section">
+          <h2>🛠 For developers</h2>
+          <p>Full project structure and setup instructions in the repo README. Key commands:</p>
+          <ul>
+            <li><code>npm run dev</code> — start with nodemon</li>
+            <li><code>npm run seed</code> — reset the demo database</li>
+            <li><code>npm start</code> — production mode</li>
+          </ul>
+          <p>
+            <a href="/pages/admin.html">Admin dashboard</a> ·
+            <a href="/pages/download-center.html">Download Center</a> ·
+            <a href="/">Home</a>
+          </p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-bottom" style="border-top:none;padding-top:0">
+        <span>© <span id="year"></span> Kelvin Ikpeni Offline AI Learning Hub</span>
+        <span>Offline-first · Low-data · Curriculum-grounded</span>
+      </div>
+    </div>
+  </footer>
+
+  <div class="floating-controls" aria-label="Quick settings">
+    <button id="data-saver-toggle" class="toggle-pill" aria-pressed="false" title="Reduce data usage">
+      <span class="dot" aria-hidden="true"></span> Data Saver
+    </button>
+    <button id="demo-offline-toggle" class="toggle-pill" aria-pressed="false" title="Simulate offline for demo">
+      <span class="dot" aria-hidden="true"></span> Demo Offline
+    </button>
+  </div>
+
+  <script src="/js/app.js"></script>
+</body>
+</html>

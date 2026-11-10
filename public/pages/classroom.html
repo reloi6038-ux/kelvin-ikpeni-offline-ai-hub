@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#0f2027">
+  <title>Classroom — Kelvin Hub</title>
+  <link rel="manifest" href="/manifest.json">
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="stylesheet" href="/css/classroom.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <header class="site-header">
+    <div class="container">
+      <a href="/" class="brand" aria-label="Kelvin Hub — home">
+        <span class="brand-mark" aria-hidden="true">K</span>
+        <span>Kelvin Hub</span>
+      </a>
+      <span id="connection-badge" class="badge badge-online" role="status" aria-live="polite">
+        <span class="dot"></span> Online
+      </span>
+    </div>
+  </header>
+
+  <main id="main">
+    <!-- JOIN VIEW -->
+    <section id="view-join" class="classroom-view">
+      <div class="classroom-hero">
+        <div class="container">
+          <div class="classroom-hero-icon">🏫</div>
+          <h1 id="join-title">Joining classroom…</h1>
+          <p class="classroom-hero-sub" id="join-sub">Connecting to your teacher's session</p>
+        </div>
+      </div>
+
+      <div class="container classroom-body">
+        <div id="join-loading" class="classroom-card classroom-card-center">
+          <div class="spinner" aria-hidden="true"></div>
+          <p>Connecting…</p>
+        </div>
+
+        <div id="join-error" class="classroom-card classroom-card-center" hidden>
+          <div class="classroom-error-icon">⚠️</div>
+          <h2>Could not join classroom</h2>
+          <p id="join-error-msg"></p>
+          <a href="/" class="btn btn-primary">Return home</a>
+        </div>
+
+        <div id="join-form" class="classroom-card" hidden>
+          <h2>Welcome!</h2>
+          <p class="classroom-muted">Enter your name so your teacher can see you're here.</p>
+          <div class="classroom-form-group">
+            <label for="student-name">Your name (optional)</label>
+            <input type="text" id="student-name" placeholder="e.g. Adaeze" maxlength="40" autocomplete="name">
+          </div>
+          <button class="btn btn-primary btn-block" id="join-btn">
+            Enter classroom →
+          </button>
+          <p class="classroom-fineprint">
+            This will download the learning packs your teacher shared. You can learn offline afterward.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- CLASSROOM VIEW (after joining) -->
+    <section id="view-classroom" class="classroom-view" hidden>
+      <div class="classroom-hero">
+        <div class="container">
+          <div class="classroom-hero-icon">📚</div>
+          <h1 id="classroom-title">Classroom</h1>
+          <p class="classroom-hero-sub" id="classroom-sub">You're connected</p>
+        </div>
+      </div>
+
+      <div class="container classroom-body">
+        <div class="classroom-card" id="announcements-card" hidden>
+          <h2 class="classroom-card-title">📢 Announcements</h2>
+          <div id="announcement-list" class="classroom-announcement-list"></div>
+        </div>
+
+        <div class="classroom-card">
+          <h2 class="classroom-card-title">📦 Learning packs shared</h2>
+          <div id="packs-list" class="classroom-pack-list">
+            <p class="classroom-muted">No packs shared yet.</p>
+          </div>
+          <p class="classroom-fineprint">
+            Downloads work even without internet after they finish.
+          </p>
+        </div>
+
+        <div class="classroom-card">
+          <h2 class="classroom-card-title">🎯 Quick actions</h2>
+          <div class="classroom-action-grid">
+            <a href="/pages/offline-library.html" class="classroom-action">
+              <span class="classroom-action-icon">📖</span>
+              <span>Open library</span>
+            </a>
+            <a href="/pages/quizzes.html" class="classroom-action">
+              <span class="classroom-action-icon">✏️</span>
+              <span>Take a quiz</span>
+            </a>
+            <a href="/pages/ai-tutor.html" class="classroom-action">
+              <span class="classroom-action-icon">✨</span>
+              <span>Ask the AI tutor</span>
+            </a>
+            <a href="/pages/dashboard.html" class="classroom-action">
+              <span class="classroom-action-icon">📊</span>
+              <span>My progress</span>
+            </a>
+          </div>
+        </div>
+
+        <div class="classroom-card classroom-status-card">
+          <div class="classroom-status">
+            <span class="classroom-status-dot" aria-hidden="true"></span>
+            <span>Connected to classroom · <span id="student-count">1</span> student(s) online</span>
+          </div>
+          <button class="btn btn-sm btn-secondary" id="leave-btn">Leave classroom</button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script src="/js/app.js"></script>
+  <script src="/js/offline-db.js"></script>
+  <script src="/js/connectivity.js"></script>
+  <script src="/js/classroom.js"></script>
+</body>
+</html>

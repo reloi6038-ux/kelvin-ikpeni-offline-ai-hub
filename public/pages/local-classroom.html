@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#0f2027">
+  <title>Local Classroom — Kelvin Hub</title>
+  <link rel="manifest" href="/manifest.json">
+  <link rel="stylesheet" href="/css/main.css">
+  <style>
+    .page-hero { background: linear-gradient(135deg, var(--brand-deep), var(--brand-teal)); color: var(--text-inverse); padding: var(--space-6) 0 var(--space-5); }
+    .page-hero h1 { font-size: clamp(1.6rem, 4vw, 2.2rem); margin: 0 0 var(--space-2); }
+    .page-lede { max-width: 55ch; color: rgba(248,250,252,.85); margin: 0; }
+    .diagram {
+      display: grid; gap: var(--space-4); grid-template-columns: 1fr;
+      margin: var(--space-5) 0;
+    }
+    @media (min-width: 700px) { .diagram { grid-template-columns: repeat(3, 1fr); } }
+    .diagram-node {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: var(--space-4);
+      text-align: center;
+    }
+    .diagram-node.primary { border-color: var(--brand-accent); border-width: 2px; background: #f0fdfa; }
+    .diagram-node h3 { margin: 0 0 var(--space-2); font-size: 1rem; }
+    .diagram-node p { margin: 0; font-size: 0.85rem; color: var(--text-muted); }
+    .node-icon { font-size: 2.5rem; margin-bottom: var(--space-2); }
+  </style>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <header class="site-header">
+    <div class="container">
+      <a href="/" class="brand" aria-label="Kelvin Hub — home">
+        <span class="brand-mark" aria-hidden="true">K</span>
+        <span>Kelvin Hub</span>
+      </a>
+      <button class="nav-toggle" aria-label="Toggle navigation" aria-expanded="false" id="nav-toggle">☰</button>
+      <nav class="main-nav" id="main-nav" aria-label="Primary navigation">
+        <a href="/pages/dashboard.html">Dashboard</a>
+        <a href="/pages/courses.html">Courses</a>
+        <a href="/pages/local-classroom.html" aria-current="page">Local Classroom</a>
+        <a href="/pages/offline-library.html">My Library</a>
+        <a href="/pages/help.html">Help</a>
+      </nav>
+      <span id="connection-badge" class="badge badge-online" role="status" aria-live="polite">
+        <span class="dot"></span> Online
+      </span>
+    </div>
+  </header>
+
+  <main id="main">
+    <section class="page-hero">
+      <div class="container">
+        <h1>Local Classroom Mode</h1>
+        <p class="page-lede">
+          One device serves as the learning hotspot. Nearby students join without individual data plans.
+          Perfect for classrooms, study groups, or community learning centers.
+        </p>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container">
+        <h2 style="margin-top:0">How it works</h2>
+        <div class="diagram">
+          <div class="diagram-node primary">
+            <div class="node-icon" aria-hidden="true">🖥</div>
+            <h3>Teacher's Device</h3>
+            <p>Runs the Kelvin Hub server locally and shares its Wi-Fi hotspot.</p>
+          </div>
+          <div class="diagram-node">
+            <div class="node-icon" aria-hidden="true">📡</div>
+            <h3>Local Network</h3>
+            <p>Students connect to the hotspot. No internet needed for local access.</p>
+          </div>
+          <div class="diagram-node">
+            <div class="node-icon" aria-hidden="true">📱</div>
+            <h3>Student Devices</h3>
+            <p>Open the classroom URL. Download packs. Learn. Sync when back online.</p>
+          </div>
+        </div>
+
+        <div class="card" style="margin-top:var(--space-5)">
+          <h3 style="margin-top:0">Ready to try it?</h3>
+          <p>Local Classroom Mode requires a small local-network setup. In a real deployment:</p>
+          <ol style="padding-left:var(--space-5)">
+            <li>Start the Kelvin Hub server on the teacher's laptop.</li>
+            <li>Enable the laptop's Wi-Fi hotspot (Windows: <em>Mobile hotspot</em>; Linux: <code>create_ap</code>; Mac: <em>Sharing → Internet Sharing</em>).</li>
+            <li>Note the laptop's local IP address (e.g. <code>192.168.137.1</code>).</li>
+            <li>Students connect to the hotspot and open <code>http://192.168.137.1:3000</code> in their browser.</li>
+            <li>They can download packs, take quizzes, and use the AI tutor.</li>
+            <li>When they reconnect to the internet, everything syncs back to the main server.</li>
+          </ol>
+          <p class="text-sm text-muted">
+            This prototype can demonstrate the concept on a single machine. Full multi-device classroom
+            mode requires the server to be reachable on the local network — the codebase is ready,
+            just needs a network configuration step.
+          </p>
+        </div>
+
+        <div class="card" style="margin-top:var(--space-4)">
+          <h3 style="margin-top:0">What works today</h3>
+          <p>Even without the local hotspot setup, students can:</p>
+          <ul style="padding-left:var(--space-5)">
+            <li>✅ Download learning packs at home</li>
+            <li>✅ Use everything offline on the bus, at school, in the village</li>
+            <li>✅ Sync quiz attempts when they next connect</li>
+            <li>✅ Share a device with siblings — each has their own progress</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-bottom" style="border-top:none;padding-top:0">
+        <span>© <span id="year"></span> Kelvin Ikpeni Offline AI Learning Hub</span>
+        <span>Local-first. Network-optional.</span>
+      </div>
+    </div>
+  </footer>
+
+  <div class="floating-controls" aria-label="Quick settings">
+    <button id="data-saver-toggle" class="toggle-pill" aria-pressed="false" title="Reduce data usage">
+      <span class="dot" aria-hidden="true"></span> Data Saver
+    </button>
+    <button id="demo-offline-toggle" class="toggle-pill" aria-pressed="false" title="Simulate offline for demo">
+      <span class="dot" aria-hidden="true"></span> Demo Offline
+    </button>
+  </div>
+
+  <script src="/js/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#0f2027">
+  <title>Courses — Kelvin Hub</title>
+  <link rel="manifest" href="/manifest.json">
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="stylesheet" href="/css/courses.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <header class="site-header">
+    <div class="container">
+      <a href="/" class="brand" aria-label="Kelvin Hub — home">
+        <span class="brand-mark" aria-hidden="true">K</span>
+        <span>Kelvin Hub</span>
+      </a>
+      <button class="nav-toggle" aria-label="Toggle navigation" aria-expanded="false" id="nav-toggle">☰</button>
+      <nav class="main-nav" id="main-nav" aria-label="Primary navigation">
+        <a href="/pages/dashboard.html">Dashboard</a>
+        <a href="/pages/courses.html" aria-current="page">Courses</a>
+        <a href="/pages/download-center.html">Offline Packs</a>
+        <a href="/pages/ai-tutor.html">AI Tutor</a>
+        <a href="/pages/offline-library.html">My Library</a>
+        <a href="/pages/help.html">Help</a>
+      </nav>
+      <span id="connection-badge" class="badge badge-online" role="status" aria-live="polite">
+        <span class="dot"></span> Online
+      </span>
+    </div>
+  </header>
+
+  <main id="main">
+    <!-- ============ HERO ============ -->
+    <section class="cr-hero">
+      <div class="container">
+        <div class="cr-hero-inner">
+          <span class="cr-hero-eyebrow">📚 Curriculum-Aligned Courses</span>
+          <h1 class="cr-hero-title">
+            Explore every subject. <span class="cr-hero-title-accent">Learn at your level.</span>
+          </h1>
+          <p class="cr-hero-lede">
+            Browse 5 subjects across JSS1 through SS3. Preview any lesson before downloading — everything works offline once you save it.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ FILTER CHIPS ============ -->
+    <section class="cr-filters-wrap">
+      <div class="container">
+        <div class="cr-filters" role="group" aria-label="Filter courses">
+          <div class="cr-filter-row">
+            <span class="cr-filter-label">Level</span>
+            <div class="cr-chips" id="level-chips" role="group" aria-label="Filter by class level"></div>
+          </div>
+          <div class="cr-filter-row">
+            <span class="cr-filter-label">Curriculum</span>
+            <div class="cr-chips" id="curriculum-chips" role="group" aria-label="Filter by curriculum"></div>
+          </div>
+          <div class="cr-filter-row">
+            <div class="cr-search-box">
+              <svg class="cr-search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                <circle cx="11" cy="11" r="8"></circle>
+                <path d="m21 21-4.35-4.35"></path>
+              </svg>
+              <input type="search" id="cr-search" placeholder="Search subjects or lessons…" autocomplete="off">
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ GRID ============ -->
+    <section class="cr-section">
+      <div class="container">
+        <div id="cr-loading" class="cr-loading">
+          <div class="cr-spinner" aria-hidden="true"></div>
+          <p>Loading subjects…</p>
+        </div>
+
+        <div id="cr-empty" class="cr-empty" hidden>
+          <div class="cr-empty-icon" aria-hidden="true">🔍</div>
+          <h3 class="cr-empty-title">No subjects match your filters</h3>
+          <p class="cr-empty-text">Try clearing the filters or changing the level.</p>
+          <button class="btn btn-secondary" id="cr-reset-btn">Reset filters</button>
+        </div>
+
+        <div id="cr-grid" class="cr-grid" hidden></div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ============ PREVIEW MODAL ============ -->
+  <div class="cr-modal-backdrop" id="cr-modal-backdrop" aria-hidden="true">
+    <div class="cr-modal" role="dialog" aria-modal="true" aria-labelledby="cr-modal-title">
+      <div class="cr-modal-header">
+        <div>
+          <div class="cr-modal-meta" id="cr-modal-meta">PREVIEW</div>
+          <h2 class="cr-modal-title" id="cr-modal-title">Loading…</h2>
+        </div>
+        <button class="cr-modal-close" id="cr-modal-close" aria-label="Close preview">✕</button>
+      </div>
+      <div class="cr-modal-body" id="cr-modal-body"></div>
+      <div class="cr-modal-footer">
+        <div id="cr-modal-source" style="font-size:0.8rem;color:var(--text-muted)"></div>
+        <div class="cr-modal-actions">
+          <button class="btn btn-secondary" id="cr-modal-cancel">Close</button>
+          <a class="btn btn-primary" id="cr-modal-download" href="/pages/download-center.html">⬇ Download pack</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-bottom" style="border-top:none;padding-top:0">
+        <span>© <span id="year"></span> Kelvin Ikpeni Offline AI Learning Hub</span>
+        <span>Preview any lesson. Download to learn offline.</span>
+      </div>
+    </div>
+  </footer>
+
+  <div class="floating-controls" aria-label="Quick settings">
+    <button id="data-saver-toggle" class="toggle-pill" aria-pressed="false" title="Reduce data usage">
+      <span class="dot" aria-hidden="true"></span> Data Saver
+    </button>
+    <button id="demo-offline-toggle" class="toggle-pill" aria-pressed="false" title="Simulate offline for demo">
+      <span class="dot" aria-hidden="true"></span> Demo Offline
+    </button>
+  </div>
+
+  <script src="/js/app.js"></script>
+  <script src="/js/offline-db.js"></script>
+  <script src="/js/connectivity.js"></script>
+  <script>
+    (function () {
+      'use strict';
+
+      const state = {
+        subjects: [],
+        lessonsBySubject: new Map(),
+        downloads: new Map(), // subjectId → downloaded lesson count
+        filters: { level: 'all', curriculum: 'all', search: '' }
+      };
+
+      const dom = {
+        loading: document.getElementById('cr-loading'),
+        empty: document.getElementById('cr-empty'),
+        grid: document.getElementById('cr-grid'),
+        levelChips: document.getElementById('level-chips'),
+        curriculumChips: document.getElementById('curriculum-chips'),
+        searchInput: document.getElementById('cr-search'),
+        resetBtn: document.getElementById('cr-reset-btn'),
+        modal: document.getElementById('cr-modal-backdrop'),
+        modalTitle: document.getElementById('cr-modal-title'),
+        modalMeta: document.getElementById('cr-modal-meta'),
+        modalBody: document.getElementById('cr-modal-body'),
+        modalSource: document.getElementById('cr-modal-source'),
+        modalClose: document.getElementById('cr-modal-close'),
+        modalCancel: document.getElementById('cr-modal-cancel'),
+        modalDownload: document.getElementById('cr-modal-download')
+      };
+
+      const LEVELS = ['JSS1', 'JSS2', 'JSS3', 'SS1', 'SS2', 'SS3'];
+      const CURRICULA = ['Nigerian', 'WAEC', 'NECO', 'IGCSE'];
+
+      // ------------------------------------------------------------------
+      // Boot
+      // ------------------------------------------------------------------
+      async function init() {
+        try {
+          // Load downloaded lesson counts per subject
+          if (window.KH_DB) {
+            const packs = await KH_DB.listPacks();
+            for (const pack of packs) {
+              if (pack.subject && pack.subject.slug) {
+                const lessons = await KH_DB.lessonsForPack(pack.id);
+                const key = pack.subject.slug;
+                state.downloads.set(key, (state.downloads.get(key) || 0) + lessons.length);
+              }
+            }
+          }
+        } catch (err) {
+          console.warn('Downloads map failed:', err.message);
+        }
+
+        try {
+          const res = await fetch('/api/subjects?limit=100');
+          if (!res.ok) throw new Error(`HTTP ${res.status}`);
+          const json = await res.json();
+          state.subjects = json.data || [];
+
+          // Prefetch lessons for each subject (parallel, small)
+          const lessonResults = await Promise.allSettled(
+            state.subjects.map(async (s) => {
+              const r = await fetch(`/api/subjects/${s.slug}/lessons?limit=20`);
+              if (!r.ok) return [];
+              const j = await r.json();
+              return j.data || [];
+            })
+          );
+          state.subjects.forEach((s, i) => {
+            state.lessonsBySubject.set(s._id, lessonResults[i].status === 'fulfilled' ? lessonResults[i].value : []);
+          });
+
+          dom.loading.hidden = true;
+          renderChips();
+          render();
+        } catch (err) {
+          dom.loading.hidden = true;
+          dom.grid.hidden = true;
+          dom.empty.hidden = false;
+          dom.empty.querySelector('.cr-empty-title').textContent = 'Could not load subjects';
+          dom.empty.querySelector('.cr-empty-text').textContent = err.message;
+        }
+      }
+
+      // ------------------------------------------------------------------
+      // Filter chips
+      // ------------------------------------------------------------------
+      function renderChips() {
+        // Level chips
+        const levelCounts = new Map();
+        for (const s of state.subjects) {
+          for (const lvl of (s.levels || [])) {
+            levelCounts.set(lvl, (levelCounts.get(lvl) || 0) + 1);
+          }
+        }
+        dom.levelChips.innerHTML = `
+          <button class="cr-chip is-active" data-level="all">
+            All levels <span class="cr-chip-count">${state.subjects.length}</span>
+          </button>
+          ${LEVELS.filter((l) => levelCounts.has(l)).map((l) => `
+            <button class="cr-chip" data-level="${l}">
+              ${l} <span class="cr-chip-count">${levelCounts.get(l)}</span>
+            </button>
+          `).join('')}
+        `;
+
+        // Curriculum chips
+        const currCounts = new Map();
+        for (const s of state.subjects) {
+          const c = s.curriculum || 'Nigerian';
+          currCounts.set(c, (currCounts.get(c) || 0) + 1);
+        }
+        dom.curriculumChips.innerHTML = `
+          <button class="cr-chip is-active" data-curriculum="all">
+            All <span class="cr-chip-count">${state.subjects.length}</span>
+          </button>
+          ${CURRICULA.filter((c) => currCounts.has(c)).map((c) => `
+            <button class="cr-chip" data-curriculum="${c}">
+              ${c} <span class="cr-chip-count">${currCounts.get(c)}</span>
+            </button>
+          `).join('')}
+        `;
+
+        // Wire
+        dom.levelChips.querySelectorAll('[data-level]').forEach((chip) => {
+          chip.addEventListener('click', () => {
+            state.filters.level = chip.dataset.level;
+            dom.levelChips.querySelectorAll('.cr-chip').forEach((c) => c.classList.toggle('is-active', c === chip));
+            render();
+          });
+        });
+        dom.curriculumChips.querySelectorAll('[data-curriculum]').forEach((chip) => {
+          chip.addEventListener('click', () => {
+            state.filters.curriculum = chip.dataset.curriculum;
+            dom.curriculumChips.querySelectorAll('.cr-chip').forEach((c) => c.classList.toggle('is-active', c === chip));
+            render();
+          });
+        });
+      }
+
+      // ------------------------------------------------------------------
+      // Search
+      // ------------------------------------------------------------------
+      let searchDebounce = null;
+      dom.searchInput.addEventListener('input', (e) => {
+        clearTimeout(searchDebounce);
+        searchDebounce = setTimeout(() => {
+          state.filters.search = e.target.value.trim().toLowerCase();
+          render();
+        }, 180);
+      });
+
+      // ------------------------------------------------------------------
+      // Render grid
+      // ------------------------------------------------------------------
+      function render() {
+        let filtered = state.subjects.slice();
+
+        if (state.filters.level !== 'all') {
+          filtered = filtered.filter((s) => (s.levels || []).includes(state.filters.level));
+        }
+        if (state.filters.curriculum !== 'all') {
+          filtered = filtered.filter((s) => (s.curriculum || 'Nigerian') === state.filters.curriculum);
+        }
+        if (state.filters.search) {
+          const q = state.filters.search;
+          filtered = filtered.filter((s) => {
+            const matchSubject = s.name.toLowerCase().includes(q) ||
+                                (s.description || '').toLowerCase().includes(q);
+            if (matchSubject) return true;
+            const lessons = state.lessonsBySubject.get(s._id) || [];
+            return lessons.some((l) => l.title.toLowerCase().includes(q));
+          });
+        }
+
+        if (filtered.length === 0) {
+          dom.grid.hidden = true;
+          dom.empty.hidden = false;
+          return;
+        }
+
+        dom.empty.hidden = true;
+        dom.grid.hidden = false;
+        dom.grid.innerHTML = '';
+        filtered.forEach((s) => dom.grid.appendChild(renderSubjectCard(s)));
+        observeCards();
+      }
+
+      // ------------------------------------------------------------------
+      // Render subject card
+      // ------------------------------------------------------------------
+      function renderSubjectCard(subject) {
+        const card = document.createElement('article');
+        card.className = 'cr-card';
+
+        const lessons = state.lessonsBySubject.get(subject._id) || [];
+        const downloadedCount = state.downloads.get(subject.slug) || 0;
+
+        // Colorful gradient per subject
+        const colors = [
+          ['#1e3a8a', '#3b82f6'], // blue
+          ['#065f46', '#10b981'], // green
+          ['#7c2d12', '#f97316'], // orange
+          ['#581c87', '#a855f7'], // purple
+          ['#7f1d1d', '#ef4444'], // red
+          ['#831843', '#ec4899'], // pink
+          ['#134e4a', '#14b8a6'], // teal
+          ['#78350f', '#d97706'], // amber
+        ];
+        const hash = (subject.name || '').split('').reduce((s, c) => s + c.charCodeAt(0), 0);
+        const [c1, c2] = colors[hash % colors.length];
+
+        const lessonsHTML = lessons.length === 0
+          ? '<div class="cr-lessons-empty">No lessons available yet</div>'
+          : lessons.slice(0, 4).map((l, idx) => `
+              <button class="cr-lesson" data-lesson-id="${l._id}">
+                <span class="cr-lesson-icon">${idx + 1}</span>
+                <span class="cr-lesson-title">${escapeHtml(l.title)}</span>
+                <span class="cr-lesson-meta">${l.estimatedMinutes || 10}m</span>
+              </button>
+            `).join('') +
+            (lessons.length > 4
+              ? `<div class="cr-lessons-empty">+ ${lessons.length - 4} more lesson${lessons.length - 4 !== 1 ? 's' : ''}</div>`
+              : '');
+
+        const downloadBadge = downloadedCount > 0
+          ? `<span style="font-size:0.72rem;padding:2px 8px;background:#dcfce7;color:#166534;border-radius:999px;font-weight:600;">✓ ${downloadedCount} downloaded</span>`
+          : '';
+
+        card.innerHTML = `
+          <div class="cr-card-header" style="background: linear-gradient(135deg, ${c1}, ${c2});">
+            <div class="cr-card-icon" aria-hidden="true">${escapeHtml(subject.icon || '📘')}</div>
+            <div class="cr-card-titles">
+              <h3 class="cr-card-title">${escapeHtml(subject.name)}</h3>
+              <p class="cr-card-sub">${escapeHtml(subject.curriculum || 'Nigerian')} · ${(subject.levels || []).join(', ')}</p>
+            </div>
+          </div>
+          <div class="cr-card-body">
+            <div class="cr-card-meta">
+              <span>📚 ${lessons.length} ${lessons.length === 1 ? 'lesson' : 'lessons'}</span>
+              <span>🎓 ${(subject.levels || []).length} level${(subject.levels || []).length === 1 ? '' : 's'}</span>
+              ${downloadBadge}
+            </div>
+            <p class="cr-card-desc">${escapeHtml(subject.description || '')}</p>
+            <div class="cr-lessons">${lessonsHTML}</div>
+            <div class="cr-card-actions">
+              <a class="btn btn-sm btn-primary" style="flex:1" href="/pages/download-center.html?subject=${encodeURIComponent(subject.slug)}">
+                ⬇ Download pack
+              </a>
+            </div>
+          </div>
+        `;
+
+        // Wire lesson preview buttons
+        card.querySelectorAll('[data-lesson-id]').forEach((btn) => {
+          btn.addEventListener('click', () => openPreview(btn.dataset.lessonId, subject));
+        });
+
+        return card;
+      }
+
+      // ------------------------------------------------------------------
+      // Preview modal
+      // ------------------------------------------------------------------
+      async function openPreview(lessonId, subject) {
+        // Try offline first, then online
+        let lesson = null;
+        if (window.KH_DB) {
+          try { lesson = await KH_DB.getLesson(lessonId); } catch {}
+        }
+
+        if (!lesson && window.KH_IS_ONLINE && window.KH_IS_ONLINE()) {
+          try {
+            const res = await fetch(`/api/lessons/${lessonId}`);
+            if (res.ok) {
+              const json = await res.json();
+              lesson = json.data;
+            }
+          } catch {}
+        }
+
+        if (!lesson) {
+          alert('Could not load lesson preview. Download the pack to read offline.');
+          return;
+        }
+
+        dom.modalTitle.textContent = lesson.title;
+        dom.modalMeta.textContent = `${(subject.name || '').toUpperCase()} · ${lesson.level || ''} · ${lesson.estimatedMinutes || 10} MIN`;
+        dom.modalSource.textContent = lesson.sourceRef || '';
+        dom.modalBody.innerHTML = `
+          <div class="cr-modal-note">
+            🔍 Preview only. Download the pack to read this lesson offline with the AI tutor.
+          </div>
+          ${sanitizeHTML(lesson.content || '')}
+        `;
+        dom.modalDownload.href = `/pages/download-center.html?subject=${encodeURIComponent(subject.slug)}`;
+        dom.modal.classList.add('is-open');
+        dom.modal.setAttribute('aria-hidden', 'false');
+        document.body.style.overflow = 'hidden';
+        setTimeout(() => dom.modalClose.focus(), 100);
+      }
+
+      function closePreview() {
+        dom.modal.classList.remove('is-open');
+        dom.modal.setAttribute('aria-hidden', 'true');
+        document.body.style.overflow = '';
+      }
+
+      dom.modalClose.addEventListener('click', closePreview);
+      dom.modalCancel.addEventListener('click', closePreview);
+      dom.modal.addEventListener('click', (e) => {
+        if (e.target === dom.modal) closePreview();
+      });
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && dom.modal.classList.contains('is-open')) closePreview();
+      });
+
+      // ------------------------------------------------------------------
+      // Scroll reveal
+      // ------------------------------------------------------------------
+      function observeCards() {
+        const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        const isDataSaver = document.documentElement.classList.contains('data-saver');
+        const cards = dom.grid.querySelectorAll('.cr-card');
+
+        if (prefersReducedMotion || isDataSaver || !('IntersectionObserver' in window)) {
+          cards.forEach((c) => c.classList.add('is-visible'));
+          return;
+        }
+
+        const observer = new IntersectionObserver((entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              const idx = Array.from(entry.target.parentElement.children).indexOf(entry.target);
+              setTimeout(() => entry.target.classList.add('is-visible'), Math.min(idx * 60, 300));
+              observer.unobserve(entry.target);
+            }
+          });
+        }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+
+        cards.forEach((c) => observer.observe(c));
+      }
+
+      // ------------------------------------------------------------------
+      // Sanitizer + helpers
+      // ------------------------------------------------------------------
+      function sanitizeHTML(html) {
+        const allowed = /<(\/?)(p|br|strong|em|ul|ol|li|h3|h4|blockquote|pre|code|a)[^>]*>/gi;
+        let out = String(html || '');
+        out = out.replace(/<script[\s\S]*?<\/script>/gi, '').replace(/<style[\s\S]*?<\/style>/gi, '');
+        out = out.replace(/\son\w+\s*=\s*"[^"]*"/gi, '').replace(/\son\w+\s*=\s*'[^']*'/gi, '');
+        out = out.replace(/<\/?([a-zA-Z][a-zA-Z0-9]*)\b[^>]*>/g, (m, tag) => {
+          const test = new RegExp(`^<\\/?${tag}\\b`, 'i');
+          return test.test(m) && allowed.source.includes(tag.toLowerCase()) ? m : '';
+        });
+        return out;
+      }
+
+      function escapeHtml(s) {
+        return String(s || '').replace(/[&<>"']/g, (c) => ({
+          '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+        }[c]));
+      }
+
+      dom.resetBtn.addEventListener('click', () => {
+        state.filters = { level: 'all', curriculum: 'all', search: '' };
+        dom.searchInput.value = '';
+        dom.levelChips.querySelectorAll('.cr-chip').forEach((c) => c.classList.toggle('is-active', c.dataset.level === 'all'));
+        dom.curriculumChips.querySelectorAll('.cr-chip').forEach((c) => c.classList.toggle('is-active', c.dataset.curriculum === 'all'));
+        render();
+      });
+
+      if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
+      else init();
+    })();
+  </script>
+</body>
+</html>

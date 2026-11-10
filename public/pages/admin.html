@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#0f2027">
+  <title>Admin — Kelvin Hub</title>
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="stylesheet" href="/css/admin.css">
+  <meta name="robots" content="noindex">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <header class="site-header">
+    <div class="container">
+      <a href="/" class="brand" aria-label="Kelvin Hub — home">
+        <span class="brand-mark" aria-hidden="true">K</span>
+        <span>Kelvin Hub</span>
+      </a>
+      <button class="nav-toggle" aria-label="Toggle navigation" aria-expanded="false" id="nav-toggle">☰</button>
+      <nav class="main-nav" id="main-nav" aria-label="Primary navigation">
+        <a href="/pages/dashboard.html">Dashboard</a>
+        <a href="/pages/download-center.html">Offline Packs</a>
+        <a href="/pages/offline-library.html">My Library</a>
+        <a href="/pages/admin.html" aria-current="page">Admin</a>
+        <a href="/pages/help.html">Help</a>
+      </nav>
+      <span id="connection-badge" class="badge badge-online" role="status" aria-live="polite">
+        <span class="dot"></span> Online
+      </span>
+    </div>
+  </header>
+
+  <main id="main">
+    <!-- LOGIN VIEW -->
+    <section id="admin-login-view">
+      <div class="ad-login-wrap">
+        <div class="ad-login-card">
+          <div class="ad-login-brand">
+            <div class="ad-login-mark" aria-hidden="true">K</div>
+            <h1 class="ad-login-title">Admin Access</h1>
+          </div>
+          <p class="ad-login-sub">
+            Enter your admin API key to manage lessons, quizzes, and learning packs.
+          </p>
+          <form id="admin-login-form" class="ad-login-form">
+            <div class="ad-input-group">
+              <label class="ad-input-label" for="admin-key-input">Admin API key</label>
+              <input type="password" id="admin-key-input" class="ad-input" required autocomplete="off" placeholder="Paste key from .env ADMIN_API_KEY">
+            </div>
+            <button type="submit" class="ad-login-btn">Sign in →</button>
+          </form>
+          <p id="admin-login-error" class="ad-login-error" hidden style="margin-top: 16px;"></p>
+        </div>
+      </div>
+    </section>
+
+    <!-- SHELL -->
+    <section id="admin-shell" class="ad-shell" hidden>
+      <!-- Sidebar -->
+      <aside class="ad-sidebar" id="ad-sidebar">
+        <div class="ad-sidebar-head">
+          <div class="ad-sidebar-icon" aria-hidden="true">K</div>
+          <div>
+            <div class="ad-sidebar-title">Kelvin Admin</div>
+            <div class="ad-sidebar-subtitle">Content management</div>
+          </div>
+        </div>
+
+        <nav class="ad-nav" aria-label="Admin sections">
+          <button class="ad-nav-btn is-active" data-view="overview">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+            Overview
+          </button>
+          <button class="ad-nav-btn" data-view="create-lesson">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            New Lesson
+          </button>
+          <button class="ad-nav-btn" data-view="create-quiz">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            New Quiz
+          </button>
+          <button class="ad-nav-btn" data-view="create-subject">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            New Subject
+          </button>
+          <button class="ad-nav-btn" data-view="content">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16v16H4z"/><path d="M4 10h16M10 4v16"/></svg>
+            Manage Content
+          </button>
+          <button class="ad-nav-btn" data-view="feedback">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+            Feedback
+          </button>
+          <button class="ad-nav-btn" data-view="packs">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+            Packs
+          </button>
+          <button class="ad-nav-btn" data-view="ai-tools">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3 7h7l-5.5 4 2 7-6.5-4.5L5.5 20l2-7L2 9h7z"/></svg>
+            AI Tools
+          </button>
+          <button class="ad-nav-btn" data-view="classroom">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18M5 21V7l7-4 7 4v14"/><path d="M9 9h.01M9 13h.01M9 17h.01M15 9h.01M15 13h.01M15 17h.01"/></svg>
+            Classroom
+          </button>
+          <button class="ad-nav-btn" data-view="logout">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></svg>
+            Sign out
+          </button>
+        </nav>
+
+        <div class="ad-sidebar-footer">
+          Prototype admin<br>Use real auth for production
+        </div>
+      </aside>
+
+      <!-- Main -->
+      <div class="ad-main">
+        <div class="ad-mobile-header">
+          <button class="ad-menu-btn" id="ad-menu-btn" aria-label="Open menu">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+          </button>
+          <strong>Admin Dashboard</strong>
+        </div>
+
+        <!-- Overview -->
+        <div data-panel="overview">
+          <div class="ad-panel-header">
+            <p class="ad-panel-eyebrow">Dashboard</p>
+            <h1 class="ad-panel-title">Overview</h1>
+            <p class="ad-panel-sub">Platform health, content inventory, and quick links.</p>
+          </div>
+          <div id="admin-overview-loading" class="ad-loading">
+            <div class="ad-spinner" aria-hidden="true"></div>
+            <p>Loading platform stats…</p>
+          </div>
+          <div id="admin-overview-content" hidden></div>
+        </div>
+
+        <!-- Create Lesson -->
+        <div data-panel="create-lesson" hidden>
+          <div class="ad-panel-header">
+            <p class="ad-panel-eyebrow">Content</p>
+            <h1 class="ad-panel-title">Create a new lesson</h1>
+            <p class="ad-panel-sub">Add a curriculum-aligned lesson that students can download offline.</p>
+          </div>
+          <div class="ad-card">
+            <form id="create-lesson-form" class="ad-form">
+              <div class="ad-form-row">
+                <label class="ad-form-label" for="cl-subject">Subject</label>
+                <select id="cl-subject" class="ad-form-select" required><option value="">Loading subjects…</option></select>
+              </div>
+              <div class="ad-form-row">
+                <label class="ad-form-label" for="cl-title">Title</label>
+                <input type="text" id="cl-title" class="ad-form-input" required placeholder="e.g. Introduction to Algebra" maxlength="160">
+              </div>
+              <div class="ad-form-row">
+                <label class="ad-form-label" for="cl-level">Class level</label>
+                <select id="cl-level" class="ad-form-select" required>
+                  <option value="JSS1">JSS1</option>
+                  <option value="JSS2" selected>JSS2</option>
+                  <option value="JSS3">JSS3</option>
+                  <option value="SS1">SS1</option>
+                  <option value="SS2">SS2</option>
+                  <option value="SS3">SS3</option>
+                </select>
+              </div>
+              <div class="ad-form-row">
+                <label class="ad-form-label" for="cl-summary">Summary (optional)</label>
+                <input type="text" id="cl-summary" class="ad-form-input" maxlength="400" placeholder="One-line description">
+              </div>
+              <div class="ad-form-row">
+                <label class="ad-form-label" for="cl-content">Content (HTML allowed)</label>
+                <textarea id="cl-content" class="ad-form-textarea" required placeholder="<p>Your lesson content here…</p>"></textarea>
+              </div>
+              <div class="ad-form-row">
+                <label class="ad-form-label" for="cl-keypoints">Key points (one per line)</label>
+                <textarea id="cl-keypoints" class="ad-form-textarea" style="min-height:80px" placeholder="A fraction shows a part of a whole&#10;The numerator is the top number"></textarea>
+              </div>
+              <div class="ad-form-row">
+                <label class="ad-form-label" for="cl-source">Source reference (optional)</label>
+                <input type="text" id="cl-source" class="ad-form-input" placeholder="JSS2 Mathematics, Chapter 3">
+              </div>
+              <div class="ad-form-checkbox-row">
+                <input type="checkbox" id="cl-publish" checked>
+                <label for="cl-publish">Publish immediately</label>
+              </div>
+              <button type="submit" class="ad-submit-btn">Create Lesson</button>
+            </form>
+          </div>
+        </div>
+
+        <!-- Create Quiz -->
+        <div data-panel="create-quiz" hidden>
+          <div class="ad-panel-header">
+            <p class="ad-panel-eyebrow">Content</p>
+            <h1 class="ad-panel-title">Create a new quiz</h1>
+            <p class="ad-panel-sub">Build a quiz with multiple questions. It works offline once downloaded.</p>
+          </div>
+          <div class="ad-card">
+            <form id="create-quiz-form" class="ad-form">
+              <div class="ad-form-row">
+                <label class="ad-form-label" for="cq-subject">Subject</label>
+                <select id="cq-subject" class="ad-form-select" required><option value="">Loading subjects…</option></select>
+              </div>
+              <div class="ad-form-row">
+                <label class="ad-form-label" for="cq-lesson">Lesson (optional)</label>
+                <select id="cq-lesson" class="ad-form-select"><option value="">No lesson</option></select>
+              </div>
+              <div class="ad-form-row">
+                <label class="ad-form-label" for="cq-title">Quiz title</label>
+                <input type="text" id="cq-title" class="ad-form-input" required placeholder="e.g. Fractions Basics" maxlength="160">
+              </div>
+              <div class="ad-form-row">
+                <label class="ad-form-label" for="cq-level">Class level</label>
+                <select id="cq-level" class="ad-form-select" required>
+                  <option value="JSS1">JSS1</option>
+                  <option value="JSS2" selected>JSS2</option>
+                  <option value="JSS3">JSS3</option>
+                  <option value="SS1">SS1</option>
+                  <option value="SS2">SS2</option>
+                  <option value="SS3">SS3</option>
+                </select>
+              </div>
+              <div class="ad-form-row">
+                <label class="ad-form-label" for="cq-pass">Passing score (%)</label>
+                <input type="number" id="cq-pass" class="ad-form-input" value="70" min="0" max="100">
+              </div>
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-top:16px;margin-bottom:8px;">
+                <h3 style="margin:0;font-size:1rem;font-weight:700;">Questions</h3>
+                <button type="button" class="ad-add-btn" id="cq-add-question">+ Add question</button>
+              </div>
+              <div id="cq-questions"></div>
+              <button type="submit" class="ad-submit-btn">Create Quiz</button>
+            </form>
+          </div>
+        </div>
+
+        <!-- Create Subject -->
+        <div data-panel="create-subject" hidden>
+          <div class="ad-panel-header">
+            <p class="ad-panel-eyebrow">Content</p>
+            <h1 class="ad-panel-title">Create a new subject</h1>
+            <p class="ad-panel-sub">Add a subject to your curriculum library.</p>
+          </div>
+          <div class="ad-card">
+            <form id="create-subject-form" class="ad-form">
+              <div class="ad-form-row">
+                <label class="ad-form-label" for="cs-name">Subject name</label>
+                <input type="text" id="cs-name" class="ad-form-input" required placeholder="e.g. Physics" maxlength="80">
+              </div>
+              <div class="ad-form-row">
+                <label class="ad-form-label" for="cs-icon">Emoji icon</label>
+                <input type="text" id="cs-icon" class="ad-form-input" placeholder="📘" maxlength="4" style="max-width:120px">
+              </div>
+              <div class="ad-form-row">
+                <label class="ad-form-label" for="cs-description">Description (optional)</label>
+                <textarea id="cs-description" class="ad-form-textarea" maxlength="500" style="min-height:80px"></textarea>
+              </div>
+              <div class="ad-form-row">
+                <label class="ad-form-label" for="cs-levels">Levels</label>
+                <select id="cs-levels" class="ad-form-select" multiple size="4" style="min-height:120px">
+                  <option value="JSS1" selected>JSS1</option>
+                  <option value="JSS2" selected>JSS2</option>
+                  <option value="JSS3" selected>JSS3</option>
+                  <option value="SS1">SS1</option>
+                  <option value="SS2">SS2</option>
+                  <option value="SS3">SS3</option>
+                </select>
+              </div>
+              <button type="submit" class="ad-submit-btn">Create Subject</button>
+            </form>
+          </div>
+        </div>
+
+        <!-- Edit Lesson -->
+        <div data-panel="edit-lesson" hidden>
+          <div class="ad-panel-header">
+            <p class="ad-panel-eyebrow">Editing</p>
+            <h1 class="ad-panel-title" id="edit-lesson-title">Edit lesson</h1>
+            <p class="ad-panel-sub">Update this lesson. Changes reach students who re-download the pack.</p>
+          </div>
+          <div class="ad-card">
+            <form id="edit-lesson-form" class="ad-form">
+              <input type="hidden" id="el-id">
+              <input type="hidden" id="el-subject-id">
+              <div class="ad-form-row">
+                <label class="ad-form-label" for="el-title">Title</label>
+                <input type="text" id="el-title" class="ad-form-input" required maxlength="160">
+              </div>
+              <div class="ad-form-row">
+                <label class="ad-form-label" for="el-level">Class level</label>
+                <select id="el-level" class="ad-form-select" required>
+                  <option value="JSS1">JSS1</option>
+                  <option value="JSS2">JSS2</option>
+                  <option value="JSS3">JSS3</option>
+                  <option value="SS1">SS1</option>
+                  <option value="SS2">SS2</option>
+                  <option value="SS3">SS3</option>
+                </select>
+              </div>
+              <div class="ad-form-row">
+                <label class="ad-form-label" for="el-summary">Summary</label>
+                <input type="text" id="el-summary" class="ad-form-input" maxlength="400">
+              </div>
+              <div class="ad-form-row">
+                <label class="ad-form-label" for="el-content">Content (HTML allowed)</label>
+                <textarea id="el-content" class="ad-form-textarea" required></textarea>
+              </div>
+              <div class="ad-form-row">
+                <label class="ad-form-label" for="el-keypoints">Key points (one per line)</label>
+                <textarea id="el-keypoints" class="ad-form-textarea" style="min-height:80px"></textarea>
+              </div>
+              <div class="ad-form-row">
+                <label class="ad-form-label" for="el-source">Source reference</label>
+                <input type="text" id="el-source" class="ad-form-input">
+              </div>
+              <div class="ad-form-checkbox-row">
+                <input type="checkbox" id="el-publish">
+                <label for="el-publish">Published</label>
+              </div>
+              <div style="display:flex;gap:8px;">
+                <button type="submit" class="ad-submit-btn">Save changes</button>
+                <button type="button" class="ad-table-btn" id="el-cancel">Cancel</button>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <!-- Edit Quiz -->
+        <div data-panel="edit-quiz" hidden>
+          <div class="ad-panel-header">
+            <p class="ad-panel-eyebrow">Editing</p>
+            <h1 class="ad-panel-title" id="edit-quiz-title">Edit quiz</h1>
+            <p class="ad-panel-sub">Update this quiz. Changes reach students who re-download the pack.</p>
+          </div>
+          <div class="ad-card">
+            <form id="edit-quiz-form" class="ad-form">
+              <input type="hidden" id="eq-id">
+              <input type="hidden" id="eq-subject-id">
+              <div class="ad-form-row">
+                <label class="ad-form-label" for="eq-title">Quiz title</label>
+                <input type="text" id="eq-title" class="ad-form-input" required maxlength="160">
+              </div>
+              <div class="ad-form-row">
+                <label class="ad-form-label" for="eq-level">Class level</label>
+                <select id="eq-level" class="ad-form-select" required>
+                  <option value="JSS1">JSS1</option>
+                  <option value="JSS2">JSS2</option>
+                  <option value="JSS3">JSS3</option>
+                  <option value="SS1">SS1</option>
+                  <option value="SS2">SS2</option>
+                  <option value="SS3">SS3</option>
+                </select>
+              </div>
+              <div class="ad-form-row">
+                <label class="ad-form-label" for="eq-pass">Passing score (%)</label>
+                <input type="number" id="eq-pass" class="ad-form-input" min="0" max="100">
+              </div>
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-top:16px;margin-bottom:8px;">
+                <h3 style="margin:0;font-size:1rem;font-weight:700;">Questions</h3>
+                <button type="button" class="ad-add-btn" id="eq-add-question">+ Add question</button>
+              </div>
+              <div id="eq-questions"></div>
+              <div class="ad-form-checkbox-row">
+                <input type="checkbox" id="eq-publish">
+                <label for="eq-publish">Published</label>
+              </div>
+              <div style="display:flex;gap:8px;margin-top:12px;">
+                <button type="submit" class="ad-submit-btn">Save changes</button>
+                <button type="button" class="ad-table-btn" id="eq-cancel">Cancel</button>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <!-- Manage Content -->
+        <div data-panel="content" hidden>
+          <div class="ad-panel-header">
+            <p class="ad-panel-eyebrow">Inventory</p>
+            <h1 class="ad-panel-title">Manage Content</h1>
+            <p class="ad-panel-sub">Review all lessons and quizzes. Edit or unpublish as needed.</p>
+          </div>
+          <div class="ad-card">
+            <div class="ad-card-title">
+              <div class="ad-card-title-icon">📚</div>
+              <h2>Lessons</h2>
+            </div>
+            <div id="content-lessons"><p style="color: #64748b;">Loading…</p></div>
+          </div>
+          <div class="ad-card">
+            <div class="ad-card-title">
+              <div class="ad-card-title-icon" style="background: linear-gradient(135deg, #dcfce7, #86efac);">✏️</div>
+              <h2>Quizzes</h2>
+            </div>
+            <div id="content-quizzes"><p style="color: #64748b;">Loading…</p></div>
+          </div>
+        </div>
+
+        <!-- Feedback -->
+        <div data-panel="feedback" hidden>
+          <div class="ad-panel-header">
+            <p class="ad-panel-eyebrow">Inbox</p>
+            <h1 class="ad-panel-title">Feedback</h1>
+            <p class="ad-panel-sub">Student-submitted reports about content and AI responses.</p>
+          </div>
+          <div class="ad-card">
+            <div id="feedback-list"><p style="color: #64748b;">Loading…</p></div>
+          </div>
+        </div>
+
+        <!-- Packs -->
+        <div data-panel="packs" hidden>
+          <div class="ad-panel-header">
+            <p class="ad-panel-eyebrow">Distribution</p>
+            <h1 class="ad-panel-title">Learning Packs</h1>
+            <p class="ad-panel-sub">Downloadable bundles. Unpublishing blocks new downloads but keeps existing students working.</p>
+          </div>
+          <div class="ad-card">
+            <div id="admin-packs-list"><p style="color: #64748b;">Loading…</p></div>
+          </div>
+        </div>
+
+        <!-- AI tools -->
+        <div data-panel="ai-tools" hidden>
+          <div class="ad-panel-header">
+            <p class="ad-panel-eyebrow">Utilities</p>
+            <h1 class="ad-panel-title">AI Cache Tools</h1>
+            <p class="ad-panel-sub">Pre-generate AI responses so students have them in their downloaded packs.</p>
+          </div>
+          <div class="ad-card">
+            <form id="ai-warm-form" class="ad-form">
+              <div class="ad-form-row">
+                <label class="ad-form-label" for="warm-lesson-id">Lesson ID</label>
+                <input type="text" id="warm-lesson-id" class="ad-form-input" placeholder="Paste a lesson ObjectId" required>
+              </div>
+              <button class="ad-submit-btn" type="submit">Warm AI cache</button>
+            </form>
+            <div id="warm-result" hidden style="margin-top: 16px;"></div>
+          </div>
+        </div>
+
+        <!-- Classroom -->
+        <div data-panel="classroom" hidden>
+          <div class="ad-panel-header">
+            <p class="ad-panel-eyebrow">Local Network</p>
+            <h1 class="ad-panel-title">Classroom Mode</h1>
+            <p class="ad-panel-sub">Turn this device into a local learning server. Students scan a QR code and connect over Wi-Fi — no internet required.</p>
+          </div>
+
+          <div id="classroom-inactive">
+            <div class="ad-card">
+              <p style="margin: 0 0 16px; color: #64748b; font-size: 0.9rem;">
+                Start a session and share the QR code with your students. The server must be reachable on the local network.
+              </p>
+              <button class="ad-submit-btn" id="classroom-start-btn">🚀 Start classroom session</button>
+            </div>
+          </div>
+
+          <div id="classroom-active" hidden>
+            <div class="ad-card">
+              <div class="ad-classroom-status">
+                <span class="ad-classroom-dot"></span>
+                <strong>Session active</strong>
+                <span id="classroom-session-name" style="color: #64748b; font-weight: 500;"></span>
+              </div>
+
+              <div class="ad-qr-wrapper">
+                <div class="ad-qr-box">
+                  <img id="classroom-qr-img" alt="Scan to join" width="280" height="280" src="">
+                </div>
+                <div>
+                  <div class="ad-url-block">
+                    <div class="ad-url-label">Join URL</div>
+                    <div class="ad-url-value" id="classroom-join-url"></div>
+                    <button class="ad-table-btn" id="classroom-copy-url">Copy</button>
+                  </div>
+                  <div class="ad-url-block">
+                    <div class="ad-url-label">Local IP</div>
+                    <div class="ad-url-value" id="classroom-local-ip"></div>
+                  </div>
+                  <div class="ad-url-block">
+                    <div class="ad-url-label">mDNS hostname (some networks)</div>
+                    <div class="ad-url-value">http://kelvin-hub.local:3000/c</div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="ad-classroom-stats">
+                <div class="ad-classroom-stat">
+                  <div class="ad-classroom-stat-value" id="classroom-student-count">0</div>
+                  <div class="ad-classroom-stat-label">Students connected</div>
+                </div>
+                <div class="ad-classroom-stat">
+                  <div class="ad-classroom-stat-value" id="classroom-elapsed">0 min</div>
+                  <div class="ad-classroom-stat-label">Session time</div>
+                </div>
+              </div>
+
+              <h3 style="font-size: 0.95rem; font-weight: 700; margin: 20px 0 8px;">Connected students</h3>
+              <div id="classroom-students">
+                <p style="color: #64748b; font-size: 0.85rem;">No students yet.</p>
+              </div>
+
+              <div style="display:flex;gap:8px;margin-top:16px;flex-wrap:wrap;">
+                <button class="ad-submit-btn" id="classroom-announce-btn">📢 Send announcement</button>
+                <button class="ad-table-btn ad-table-btn-danger" id="classroom-stop-btn">End session</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-bottom" style="border-top:none;padding-top:0">
+        <span>© <span id="year"></span> Kelvin Ikpeni Offline AI Learning Hub</span>
+        <span>Admin API uses X-Admin-Key — prototype only.</span>
+      </div>
+    </div>
+  </footer>
+
+  <div class="floating-controls" aria-label="Quick settings">
+    <button id="data-saver-toggle" class="toggle-pill" aria-pressed="false" title="Reduce data usage">
+      <span class="dot" aria-hidden="true"></span> Data Saver
+    </button>
+    <button id="demo-offline-toggle" class="toggle-pill" aria-pressed="false" title="Simulate offline for demo">
+      <span class="dot" aria-hidden="true"></span> Demo Offline
+    </button>
+  </div>
+
+  <div class="ad-toast-container" id="toast-container"></div>
+
+  <script src="/js/app.js"></script>
+  <script src="/js/admin.js"></script>
+</body>
+</html>

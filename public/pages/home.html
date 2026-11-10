@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#0f2027">
+  <meta name="description" content="Quality learning should not depend on your internet connection. Download once, learn offline, forever. AI-powered offline tutoring for students in underserved communities.">
+  <title>Kelvin Hub — Offline AI Learning</title>
+  <link rel="manifest" href="/manifest.json">
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="stylesheet" href="/css/home.css">
+</head>
+<body class="hp-root">
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <!-- Scroll progress bar -->
+  <div class="hp-scroll-progress" aria-hidden="true">
+    <div class="hp-scroll-progress-fill" id="hp-scroll-fill"></div>
+  </div>
+
+  <header class="site-header">
+    <div class="container">
+      <a href="/" class="brand" aria-label="Kelvin Hub — home">
+        <span class="brand-mark" aria-hidden="true">K</span>
+        <span>Kelvin Hub</span>
+      </a>
+      <button class="nav-toggle" aria-label="Toggle navigation" aria-expanded="false" id="nav-toggle">☰</button>
+      <nav class="main-nav" id="main-nav" aria-label="Primary navigation">
+        <a href="/pages/dashboard.html">Dashboard</a>
+        <a href="/pages/courses.html">Courses</a>
+        <a href="/pages/download-center.html">Offline Packs</a>
+        <a href="/pages/ai-tutor.html">AI Tutor</a>
+        <a href="/pages/offline-library.html">My Library</a>
+        <a href="/pages/help.html">Help</a>
+      </nav>
+      <span id="connection-badge" class="badge badge-online" role="status" aria-live="polite">
+        <span class="dot"></span> Online
+      </span>
+    </div>
+  </header>
+
+  <main id="main">
+    <!-- ============ HERO ============ -->
+    <section class="hp-hero" aria-labelledby="hero-title">
+      <div class="container">
+        <div class="hp-hero-inner">
+          <div>
+            <span class="hp-hero-eyebrow">
+              <span class="hp-hero-eyebrow-dot" aria-hidden="true"></span>
+              AI for the Next Generation
+            </span>
+            <h1 class="hp-hero-title" id="hero-title">
+              Quality Learning Should Not Depend on Your <span class="hp-hero-title-accent">Internet Connection</span>
+            </h1>
+            <p class="hp-hero-lede">
+              Download a complete learning pack once — lessons, quizzes, notes, and AI explanations — then keep learning offline. Built for students where data is expensive and internet is unreliable.
+            </p>
+            <div class="hp-hero-actions">
+              <a href="/pages/courses.html" class="btn btn-primary">Start Learning →</a>
+              <a href="/pages/download-center.html" class="btn btn-secondary">⬇ Download a Pack</a>
+              <a href="/pages/ai-tutor.html" class="btn btn-secondary">✨ Try the AI Tutor</a>
+            </div>
+          </div>
+
+          <div class="hp-hero-cards" role="list" aria-label="Platform highlights">
+            <div class="hp-float-card" role="listitem">
+              <div class="hp-float-card-icon" aria-hidden="true">📦</div>
+              <div class="hp-float-card-body">
+                <div class="hp-float-card-value">500 KB</div>
+                <div class="hp-float-card-label">Per learning pack</div>
+              </div>
+            </div>
+            <div class="hp-float-card" role="listitem">
+              <div class="hp-float-card-icon" aria-hidden="true">📵</div>
+              <div class="hp-float-card-body">
+                <div class="hp-float-card-value">100%</div>
+                <div class="hp-float-card-label">Works offline</div>
+              </div>
+            </div>
+            <div class="hp-float-card" role="listitem">
+              <div class="hp-float-card-icon" aria-hidden="true">🎓</div>
+              <div class="hp-float-card-body">
+                <div class="hp-float-card-value">JSS1–SS3</div>
+                <div class="hp-float-card-label">Full curriculum</div>
+              </div>
+            </div>
+            <div class="hp-float-card" role="listitem">
+              <div class="hp-float-card-icon" aria-hidden="true">✨</div>
+              <div class="hp-float-card-body">
+                <div class="hp-float-card-value">AI Tutor</div>
+                <div class="hp-float-card-label">Grounded in curriculum</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ TRUST STRIP ============ -->
+    <section class="hp-trust" aria-label="Platform numbers">
+      <div class="container">
+        <div class="hp-trust-inner">
+          <div class="hp-trust-stat" data-reveal>
+            <div class="hp-trust-value" data-count="5">0</div>
+            <div class="hp-trust-label">Subjects covered</div>
+          </div>
+          <div class="hp-trust-stat" data-reveal>
+            <div class="hp-trust-value" data-count="21">0</div>
+            <div class="hp-trust-label">Curriculum lessons</div>
+          </div>
+          <div class="hp-trust-stat" data-reveal>
+            <div class="hp-trust-value" data-count="21">0</div>
+            <div class="hp-trust-label">Downloadable packs</div>
+          </div>
+          <div class="hp-trust-stat" data-reveal>
+            <div class="hp-trust-value" data-count="84">0</div>
+            <div class="hp-trust-label">AI explanations</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ PROBLEM ============ -->
+    <section class="hp-section hp-section-alt" aria-labelledby="problem-title">
+      <div class="container">
+        <div class="hp-section-head">
+          <span class="hp-section-eyebrow">The Access Gap</span>
+          <h2 class="hp-section-title" id="problem-title">For too many students, learning ends when the internet does</h2>
+          <p class="hp-section-sub">Four barriers block millions of students from continuous learning — the platform addresses all four.</p>
+        </div>
+        <div class="hp-problem-grid">
+          <article class="hp-problem-card" data-reveal>
+            <div class="hp-problem-number" aria-hidden="true">01</div>
+            <div class="hp-problem-icon" aria-hidden="true">💰</div>
+            <h3 class="hp-problem-title">Data is expensive</h3>
+            <p class="hp-problem-text">A single hour-long video lesson can cost more than a student's daily transport. Downloading content repeatedly is out of reach.</p>
+          </article>
+          <article class="hp-problem-card" data-reveal>
+            <div class="hp-problem-number" aria-hidden="true">02</div>
+            <div class="hp-problem-icon" aria-hidden="true">📵</div>
+            <h3 class="hp-problem-title">Connectivity is unreliable</h3>
+            <p class="hp-problem-text">Power cuts and dead zones mean lessons end mid-sentence. Students lose progress, momentum, and trust in online learning.</p>
+          </article>
+          <article class="hp-problem-card" data-reveal>
+            <div class="hp-problem-number" aria-hidden="true">03</div>
+            <div class="hp-problem-icon" aria-hidden="true">📱</div>
+            <h3 class="hp-problem-title">Devices are basic and shared</h3>
+            <p class="hp-problem-text">Low-RAM Android phones can't handle heavy apps or video. Students often share one phone with siblings.</p>
+          </article>
+          <article class="hp-problem-card" data-reveal>
+            <div class="hp-problem-number" aria-hidden="true">04</div>
+            <div class="hp-problem-icon" aria-hidden="true">📚</div>
+            <h3 class="hp-problem-title">Materials don't match the curriculum</h3>
+            <p class="hp-problem-text">Generic AI answers ignore WAEC, NECO, and national syllabi — leaving students with content that doesn't help them pass exams.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ FEATURES ============ -->
+    <section class="hp-section" aria-labelledby="features-title">
+      <div class="container">
+        <div class="hp-section-head">
+          <span class="hp-section-eyebrow">The Solution</span>
+          <h2 class="hp-section-title" id="features-title">Download once. Learn forever.</h2>
+          <p class="hp-section-sub">Every feature is designed to keep that promise.</p>
+        </div>
+        <div class="hp-features-grid">
+          <article class="hp-feature" data-reveal>
+            <div class="hp-feature-icon" aria-hidden="true">⬇</div>
+            <h3 class="hp-feature-title">Download Learning Packs</h3>
+            <p class="hp-feature-text">Complete lessons, quizzes, and pre-generated AI explanations bundled into a single lightweight pack — usually under 500 KB.</p>
+          </article>
+          <article class="hp-feature" data-reveal>
+            <div class="hp-feature-icon" aria-hidden="true">✨</div>
+            <h3 class="hp-feature-title">AI Tutor, Offline</h3>
+            <p class="hp-feature-text">Explain simply, give examples, summarize, or quiz you — with no internet. Answers come from your downloaded curriculum, not generic guesses.</p>
+          </article>
+          <article class="hp-feature" data-reveal>
+            <div class="hp-feature-icon" aria-hidden="true">📚</div>
+            <h3 class="hp-feature-title">Local Curriculum First</h3>
+            <p class="hp-feature-text">Grounded in Nigerian, WAEC, NECO, and IGCSE syllabi. Administrators can import custom curriculum files from the browser.</p>
+          </article>
+          <article class="hp-feature" data-reveal>
+            <div class="hp-feature-icon" aria-hidden="true">📶</div>
+            <h3 class="hp-feature-title">Low-Data Mode</h3>
+            <p class="hp-feature-text">One switch disables images, animations, and remote fonts. Text-only mode strips everything but pure HTML.</p>
+          </article>
+          <article class="hp-feature" data-reveal>
+            <div class="hp-feature-icon" aria-hidden="true">🎓</div>
+            <h3 class="hp-feature-title">Adaptive Learning</h3>
+            <p class="hp-feature-text">Quiz performance quietly teaches the platform which topics need more practice — so revision is targeted, not generic.</p>
+          </article>
+          <article class="hp-feature" data-reveal>
+            <div class="hp-feature-icon" aria-hidden="true">🔒</div>
+            <h3 class="hp-feature-title">Safe, Verified AI</h3>
+            <p class="hp-feature-text">Every AI answer shows its source. Curriculum content is labeled separately from AI-generated suggestions. Nothing is presented as fact without grounding.</p>
+          </article>
+          <article class="hp-feature" data-reveal>
+            <div class="hp-feature-icon" aria-hidden="true">👥</div>
+            <h3 class="hp-feature-title">Local Classroom Mode</h3>
+            <p class="hp-feature-text">One device becomes a hotspot learning server. Nearby students join with their own phones — no individual data needed.</p>
+          </article>
+          <article class="hp-feature" data-reveal>
+            <div class="hp-feature-icon" aria-hidden="true">🧠</div>
+            <h3 class="hp-feature-title">Quiz & Learn Offline</h3>
+            <p class="hp-feature-text">Complete quizzes offline. Feedback is instant. Progress saves locally and syncs automatically when you reconnect.</p>
+          </article>
+          <article class="hp-feature" data-reveal>
+            <div class="hp-feature-icon" aria-hidden="true">🌍</div>
+            <h3 class="hp-feature-title">Built for Students</h3>
+            <p class="hp-feature-text">English-first with room for Nigerian and African languages. Optional text-to-speech. Works on ₦15,000 Android phones.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ HOW IT WORKS ============ -->
+    <section class="hp-section hp-section-dark" aria-labelledby="how-title">
+      <div class="container">
+        <div class="hp-section-head">
+          <span class="hp-section-eyebrow">Four Steps</span>
+          <h2 class="hp-section-title" id="how-title">How it works</h2>
+          <p class="hp-section-sub">From online download to offline mastery in minutes.</p>
+        </div>
+        <div class="hp-steps">
+          <div class="hp-step" data-reveal>
+            <div class="hp-step-num">1</div>
+            <h3 class="hp-step-title">Choose a course</h3>
+            <p class="hp-step-text">Browse by subject, class, or curriculum. Filter by size to match your data budget.</p>
+          </div>
+          <div class="hp-step" data-reveal>
+            <div class="hp-step-num">2</div>
+            <h3 class="hp-step-title">Download a pack</h3>
+            <p class="hp-step-text">One tap. Lessons, quizzes, and AI explanations save to your device — usually under 500 KB.</p>
+          </div>
+          <div class="hp-step" data-reveal>
+            <div class="hp-step-num">3</div>
+            <h3 class="hp-step-title">Learn offline</h3>
+            <p class="hp-step-text">Disconnect. Read, ask the AI tutor, take quizzes. Everything works without internet.</p>
+          </div>
+          <div class="hp-step" data-reveal>
+            <div class="hp-step-num">4</div>
+            <h3 class="hp-step-title">Sync when ready</h3>
+            <p class="hp-step-text">Reconnect and your scores sync automatically — no duplicates, no lost data.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ PREVIEW ============ -->
+    <section class="hp-section" aria-labelledby="preview-title">
+      <div class="container">
+        <div class="hp-section-head">
+          <span class="hp-section-eyebrow">Try It Live</span>
+          <h2 class="hp-section-title" id="preview-title">Everything you need to learn</h2>
+          <p class="hp-section-sub">Explore the platform — every screen works offline.</p>
+        </div>
+        <div class="hp-preview-grid">
+          <a class="hp-preview-card" data-reveal href="/pages/download-center.html">
+            <div class="hp-preview-visual hp-preview-visual-1" aria-hidden="true">📦</div>
+            <div class="hp-preview-body">
+              <h3 class="hp-preview-title">Download Center</h3>
+              <p class="hp-preview-text">Browse 21+ learning packs by subject and class. Download with real-time progress.</p>
+              <span class="hp-preview-link">Explore packs</span>
+            </div>
+          </a>
+          <a class="hp-preview-card" data-reveal href="/pages/offline-library.html">
+            <div class="hp-preview-visual hp-preview-visual-2" aria-hidden="true">📚</div>
+            <div class="hp-preview-body">
+              <h3 class="hp-preview-title">My Library</h3>
+              <p class="hp-preview-text">Read downloaded lessons. The AI tutor is built into every lesson view.</p>
+              <span class="hp-preview-link">Open library</span>
+            </div>
+          </a>
+          <a class="hp-preview-card" data-reveal href="/pages/quizzes.html">
+            <div class="hp-preview-visual hp-preview-visual-3" aria-hidden="true">✏️</div>
+            <div class="hp-preview-body">
+              <h3 class="hp-preview-title">Quizzes</h3>
+              <p class="hp-preview-text">Test yourself on any lesson. Instant feedback, per-question explanations.</p>
+              <span class="hp-preview-link">Take a quiz</span>
+            </div>
+          </a>
+          <a class="hp-preview-card" data-reveal href="/pages/ai-tutor.html">
+            <div class="hp-preview-visual hp-preview-visual-4" aria-hidden="true">✨</div>
+            <div class="hp-preview-body">
+              <h3 class="hp-preview-title">AI Tutor</h3>
+              <p class="hp-preview-text">Ask anything about a lesson. Answers come from your downloaded pack — works in airplane mode.</p>
+              <span class="hp-preview-link">Try the tutor</span>
+            </div>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ CTA ============ -->
+    <section class="hp-cta" aria-labelledby="cta-title">
+      <div class="container">
+        <div class="hp-cta-inner">
+          <h2 class="hp-cta-title" id="cta-title">Ready to learn without limits?</h2>
+          <p class="hp-cta-text">Start with the AI tutor, or grab your first learning pack and experience offline learning today.</p>
+          <div class="hp-cta-actions">
+            <a href="/pages/download-center.html" class="btn btn-primary" style="background: linear-gradient(135deg, #2dd4bf, #14b8a6); color: #0f2027;">Browse Learning Packs</a>
+            <a href="/pages/help.html" class="btn btn-secondary" style="background: rgba(255,255,255,0.1); color: #f8fafc; border-color: rgba(255,255,255,0.25);">About the Project</a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div>
+          <h4>Kelvin Ikpeni Offline AI Learning Hub</h4>
+          <p>AI for the Next Generation — reimagining how students learn, work, and grow.</p>
+          <p class="text-xs" style="opacity:.7">Demo prototype for the "AI for Zero-Bandwidth & Localized Learning" challenge.</p>
+        </div>
+        <div>
+          <h4>Learn</h4>
+          <a href="/pages/courses.html">Courses</a>
+          <a href="/pages/download-center.html">Download Center</a>
+          <a href="/pages/ai-tutor.html">AI Tutor</a>
+          <a href="/pages/offline-library.html">My Library</a>
+        </div>
+        <div>
+          <h4>About</h4>
+          <a href="/pages/help.html">Help & Project Notes</a>
+          <a href="/pages/admin.html">Admin Dashboard</a>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <span>© <span id="year"></span> Kelvin Ikpeni Offline AI Learning Hub</span>
+        <span>Offline-first · Low-data · Curriculum-grounded</span>
+      </div>
+    </div>
+  </footer>
+
+  <div class="floating-controls" aria-label="Quick settings">
+    <button id="data-saver-toggle" class="toggle-pill" aria-pressed="false" title="Reduce data usage">
+      <span class="dot" aria-hidden="true"></span> Data Saver
+    </button>
+    <button id="demo-offline-toggle" class="toggle-pill" aria-pressed="false" title="Simulate offline for demo">
+      <span class="dot" aria-hidden="true"></span> Demo Offline
+    </button>
+  </div>
+
+  <script src="/js/app.js"></script>
+  <script>
+    // ------------------------------------------------------------------
+    // Scroll progress bar
+    // ------------------------------------------------------------------
+    (function () {
+      const fill = document.getElementById('hp-scroll-fill');
+      if (!fill) return;
+      let ticking = false;
+
+      function update() {
+        const scrollTop = window.scrollY || document.documentElement.scrollTop;
+        const docHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+        const pct = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
+        fill.style.width = pct + '%';
+        ticking = false;
+      }
+
+      window.addEventListener('scroll', () => {
+        if (!ticking) {
+          requestAnimationFrame(update);
+          ticking = true;
+        }
+      }, { passive: true });
+      update();
+    })();
+
+    // ------------------------------------------------------------------
+    // Reveal-on-scroll animations
+    // ------------------------------------------------------------------
+    (function () {
+      const reveals = document.querySelectorAll('[data-reveal]');
+      if (reveals.length === 0) return;
+
+      const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const isDataSaver = document.documentElement.classList.contains('data-saver');
+
+      if (prefersReducedMotion || isDataSaver || !('IntersectionObserver' in window)) {
+        reveals.forEach((el) => el.classList.add('is-visible'));
+        return;
+      }
+
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach((entry, i) => {
+          if (entry.isIntersecting) {
+            // Stagger siblings by 80ms
+            const delay = (Array.from(entry.target.parentElement.children).indexOf(entry.target)) * 80;
+            setTimeout(() => {
+              entry.target.classList.add('is-visible');
+            }, delay);
+            observer.unobserve(entry.target);
+          }
+        });
+      }, {
+        threshold: 0.15,
+        rootMargin: '0px 0px -50px 0px'
+      });
+
+      reveals.forEach((el) => observer.observe(el));
+    })();
+
+    // ------------------------------------------------------------------
+    // Animated counters in trust strip
+    // ------------------------------------------------------------------
+    (function () {
+      const counters = document.querySelectorAll('[data-count]');
+      if (counters.length === 0) return;
+
+      const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const isDataSaver = document.documentElement.classList.contains('data-saver');
+
+      if (prefersReducedMotion || isDataSaver) {
+        counters.forEach((el) => el.textContent = el.dataset.count);
+        return;
+      }
+
+      function animate(el) {
+        const target = Number(el.dataset.count);
+        const duration = 1400;
+        const start = performance.now();
+        const easeOut = (t) => 1 - Math.pow(1 - t, 3);
+
+        function frame(now) {
+          const elapsed = now - start;
+          const progress = Math.min(elapsed / duration, 1);
+          el.textContent = String(Math.round(target * easeOut(progress)));
+          if (progress < 1) requestAnimationFrame(frame);
+        }
+        requestAnimationFrame(frame);
+      }
+
+      if ('IntersectionObserver' in window) {
+        const io = new IntersectionObserver((entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              animate(entry.target);
+              io.unobserve(entry.target);
+            }
+          });
+        }, { threshold: 0.5 });
+        counters.forEach((el) => io.observe(el));
+      } else {
+        counters.forEach((el) => el.textContent = el.dataset.count);
+      }
+    })();
+  </script>
+</body>
+</html>

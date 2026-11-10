@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#0f2027">
+  <title>My Library — Kelvin Hub</title>
+  <link rel="manifest" href="/manifest.json">
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="stylesheet" href="/css/library.css">
+  <link rel="stylesheet" href="/css/voice.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <header class="site-header">
+    <div class="container">
+      <a href="/" class="brand" aria-label="Kelvin Hub — home">
+        <span class="brand-mark" aria-hidden="true">K</span>
+        <span>Kelvin Hub</span>
+      </a>
+      <button class="nav-toggle" aria-label="Toggle navigation" aria-expanded="false" id="nav-toggle">☰</button>
+      <nav class="main-nav" id="main-nav" aria-label="Primary navigation">
+        <a href="/pages/dashboard.html">Dashboard</a>
+        <a href="/pages/courses.html">Courses</a>
+        <a href="/pages/download-center.html">Offline Packs</a>
+        <a href="/pages/ai-tutor.html">AI Tutor</a>
+        <a href="/pages/offline-library.html" aria-current="page">My Library</a>
+        <a href="/pages/help.html">Help</a>
+      </nav>
+      <span id="connection-badge" class="badge badge-online" role="status" aria-live="polite">
+        <span class="dot"></span> Online
+      </span>
+    </div>
+  </header>
+
+  <!-- Reading progress -->
+  <div class="lib-reading-progress" id="lib-reading-progress" hidden>
+    <div class="lib-reading-fill" id="lib-reading-fill"></div>
+  </div>
+
+  <main id="main">
+    <!-- LANDING VIEW -->
+    <div id="lib-home-view">
+      <section class="lib-hero">
+        <div class="container">
+          <div class="lib-hero-inner">
+            <span class="lib-hero-eyebrow">📚 Your Offline Library</span>
+            <h1 class="lib-hero-title">
+              Everything you've downloaded. <span class="lib-hero-title-accent">Ready to learn.</span>
+            </h1>
+            <p class="lib-hero-sub">
+              Read lessons, ask the AI tutor, take quizzes — all without internet. Your content lives on this device and works in airplane mode.
+            </p>
+            <div class="lib-hero-actions">
+              <a href="/pages/download-center.html" class="btn btn-primary" style="background: linear-gradient(135deg, #2dd4bf, #14b8a6); color: #0f2027;">⬇ Download more packs</a>
+              <a href="/pages/quizzes.html" class="btn btn-secondary" style="background: rgba(255,255,255,0.1); color: #f8fafc; border-color: rgba(255,255,255,0.25);">✏️ Take a quiz</a>
+            </div>
+
+            <div class="lib-stats" id="lib-stats" hidden>
+              <div class="lib-stat"><div class="lib-stat-value" id="lib-stat-packs">0</div><div class="lib-stat-label">Packs</div></div>
+              <div class="lib-stat"><div class="lib-stat-value" id="lib-stat-lessons">0</div><div class="lib-stat-label">Lessons</div></div>
+              <div class="lib-stat"><div class="lib-stat-value" id="lib-stat-quizzes">0</div><div class="lib-stat-label">Quizzes</div></div>
+              <div class="lib-stat"><div class="lib-stat-value" id="lib-stat-storage">0 KB</div><div class="lib-stat-label">Storage</div></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="lib-search-wrap">
+        <div class="container">
+          <div class="lib-search-bar">
+            <div class="lib-search-box">
+              <svg class="lib-search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                <circle cx="11" cy="11" r="8"></circle>
+                <path d="m21 21-4.35-4.35"></path>
+              </svg>
+              <input type="search" id="lib-search" placeholder="Search lessons, keywords, topics…" autocomplete="off">
+              <kbd class="lib-search-kbd" aria-hidden="true">/</kbd>
+            </div>
+            <select id="lib-pack-filter" class="lib-pack-filter" aria-label="Filter by pack">
+              <option value="">All packs</option>
+            </select>
+          </div>
+        </div>
+      </section>
+
+      <section class="lib-section">
+        <div class="container">
+          <div id="lib-loading" class="lib-loading">
+            <div class="lib-spinner" aria-hidden="true"></div>
+            <p>Opening your library…</p>
+          </div>
+
+          <div id="lib-empty" class="lib-empty" hidden>
+            <div class="lib-empty-icon" aria-hidden="true">📚</div>
+            <h2 class="lib-empty-title">Your library is empty</h2>
+            <p class="lib-empty-text">Download a learning pack to get started — lessons, quizzes, and AI explanations all work offline.</p>
+            <a href="/pages/download-center.html" class="btn btn-primary">Browse learning packs</a>
+          </div>
+
+          <div id="lib-packs" class="lib-packs-grid" hidden></div>
+          <div id="lib-search-results" hidden></div>
+        </div>
+      </section>
+    </div>
+
+    <!-- READER VIEW -->
+    <div id="lib-reader-view" class="lib-reader" hidden>
+      <!-- Sidebar -->
+      <aside class="lib-reader-sidebar" id="lib-reader-sidebar">
+        <div class="lib-reader-sidebar-head">
+          <button class="lib-back-btn" id="lib-back-btn">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M19 12H5M12 19l-7-7 7-7"/>
+            </svg>
+            <span>Library</span>
+          </button>
+          <div class="lib-sidebar-label">Lessons</div>
+        </div>
+        <div class="lib-lesson-list" id="lib-lesson-list"></div>
+        <div class="lib-sidebar-footer">
+          <button class="lib-sidebar-link" id="lib-quiz-btn">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M9 11l3 3L22 4"/>
+              <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
+            </svg>
+            <span>Take a quiz</span>
+          </button>
+        </div>
+      </aside>
+
+      <!-- Article -->
+      <article class="lib-reader-content">
+        <div class="lib-content-inner">
+          <header class="lib-article-head">
+            <div class="lib-article-badges">
+              <span class="lib-badge lib-badge-level" id="lib-level">—</span>
+              <span class="lib-badge lib-badge-time" id="lib-time">— min</span>
+              <span class="lib-badge lib-badge-verified" id="lib-verified">✓ Verified</span>
+            </div>
+            <h1 class="lib-article-title" id="lib-article-title">Loading…</h1>
+            <p class="lib-article-meta" id="lib-article-meta"></p>
+          </header>
+          <div class="lib-article-body" id="lib-article-body"></div>
+          <div class="lib-quiz-box" id="lib-quiz-box" hidden></div>
+        </div>
+      </article>
+
+      <!-- Tutor -->
+      <aside class="lib-reader-tutor" id="lib-reader-tutor">
+        <div class="lib-tutor-head">
+          <div class="lib-tutor-icon">✨</div>
+          <div>
+            <div class="lib-tutor-title">AI Tutor</div>
+            <div class="lib-tutor-subtitle">Grounded in this lesson</div>
+          </div>
+          <button class="lib-tutor-collapse" id="lib-tutor-collapse" aria-label="Toggle tutor">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="m9 18 6-6-6-6"/>
+            </svg>
+          </button>
+        </div>
+
+        <div class="lib-tutor-tabs" role="tablist">
+          <button class="lib-tutor-tab is-active" data-tab="actions">Actions</button>
+          <button class="lib-tutor-tab" data-tab="ask">Ask</button>
+        </div>
+
+        <div class="lib-tutor-body">
+          <div class="lib-tutor-panel is-active" data-panel="actions">
+            <button class="lib-tutor-action" data-action="explain_simply">
+              <span class="lib-tutor-action-icon">📖</span>
+              <div>
+                <div class="lib-tutor-action-title">Explain Simply</div>
+                <div class="lib-tutor-action-sub">Break it down in easy words</div>
+              </div>
+            </button>
+            <button class="lib-tutor-action" data-action="give_examples">
+              <span class="lib-tutor-action-icon">💡</span>
+              <div>
+                <div class="lib-tutor-action-title">Give Examples</div>
+                <div class="lib-tutor-action-sub">Concrete examples from the lesson</div>
+              </div>
+            </button>
+            <button class="lib-tutor-action" data-action="practice_questions">
+              <span class="lib-tutor-action-icon">✏️</span>
+              <div>
+                <div class="lib-tutor-action-title">Practice Questions</div>
+                <div class="lib-tutor-action-sub">Test yourself</div>
+              </div>
+            </button>
+            <button class="lib-tutor-action" data-action="summarize">
+              <span class="lib-tutor-action-icon">📝</span>
+              <div>
+                <div class="lib-tutor-action-title">Summarize</div>
+                <div class="lib-tutor-action-sub">Key takeaways</div>
+              </div>
+            </button>
+          </div>
+
+          <div class="lib-tutor-panel" data-panel="ask">
+            <div class="lib-tutor-ask">
+              <textarea id="lib-tutor-question" placeholder="Ask anything about this lesson…" rows="3" maxlength="400"></textarea>
+              <div style="display:flex;gap:8px;margin-bottom:8px">
+                <button class="lib-tutor-ask-btn" id="lib-tutor-ask-btn" style="flex:1">Ask tutor</button>
+                <button class="voice-mic-btn" id="lib-tutor-mic" aria-label="Ask by voice" title="Ask by voice">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
+                    <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+                    <line x1="12" y1="19" x2="12" y2="23"/>
+                    <line x1="8" y1="23" x2="16" y2="23"/>
+                  </svg>
+                </button>
+              </div>
+              <p class="voice-status" id="lib-voice-status" aria-live="polite"></p>
+              <p class="lib-tutor-hint">The tutor only answers from this lesson. Tap the mic to speak.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="lib-tutor-response" id="lib-tutor-response" hidden>
+          <div class="lib-response-head">
+            <span class="lib-source-badge" id="lib-source-badge">From curriculum</span>
+            <button class="lib-response-close" id="lib-response-close" aria-label="Close response">✕</button>
+          </div>
+          <div class="lib-response-body" id="lib-response-body"></div>
+          <div class="lib-response-footer">⚠️ Verify with your teacher or textbook.</div>
+        </div>
+
+        <div class="lib-tutor-error" id="lib-tutor-error" hidden></div>
+      </aside>
+    </div>
+  </main>
+
+  <!-- Floating action bar (desktop only) -->
+  <div class="lib-fab-bar" id="lib-fab-bar" hidden>
+    <button class="lib-fab is-primary" id="lib-fab-ai">✨ Ask AI</button>
+    <button class="lib-fab" id="lib-fab-quiz">✏️ Quiz</button>
+    <button class="lib-fab" id="lib-fab-top">↑ Top</button>
+  </div>
+
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-bottom" style="border-top:none;padding-top:0">
+        <span>© <span id="year"></span> Kelvin Ikpeni Offline AI Learning Hub</span>
+        <span>Works offline · Reads from your device</span>
+      </div>
+    </div>
+  </footer>
+
+  <div class="floating-controls" aria-label="Quick settings">
+    <button id="data-saver-toggle" class="toggle-pill" aria-pressed="false" title="Reduce data usage">
+      <span class="dot" aria-hidden="true"></span> Data Saver
+    </button>
+    <button id="demo-offline-toggle" class="toggle-pill" aria-pressed="false" title="Simulate offline for demo">
+      <span class="dot" aria-hidden="true"></span> Demo Offline
+    </button>
+  </div>
+
+  <script src="/js/app.js"></script>
+  <script src="/js/offline-db.js"></script>
+  <script src="/js/connectivity.js"></script>
+  <script src="/js/voice.js"></script>
+  <script src="/js/library.js"></script>
+</body>
+</html>

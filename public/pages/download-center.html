@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#0f2027">
+  <title>Download Center — Kelvin Hub</title>
+  <link rel="manifest" href="/manifest.json">
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="stylesheet" href="/css/download.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <header class="site-header">
+    <div class="container">
+      <a href="/" class="brand" aria-label="Kelvin Hub — home">
+        <span class="brand-mark" aria-hidden="true">K</span>
+        <span>Kelvin Hub</span>
+      </a>
+      <button class="nav-toggle" aria-label="Toggle navigation" aria-expanded="false" id="nav-toggle">☰</button>
+      <nav class="main-nav" id="main-nav" aria-label="Primary navigation">
+        <a href="/pages/dashboard.html">Dashboard</a>
+        <a href="/pages/courses.html">Courses</a>
+        <a href="/pages/download-center.html" aria-current="page">Offline Packs</a>
+        <a href="/pages/ai-tutor.html">AI Tutor</a>
+        <a href="/pages/offline-library.html">My Library</a>
+        <a href="/pages/help.html">Help</a>
+      </nav>
+      <span id="connection-badge" class="badge badge-online" role="status" aria-live="polite">
+        <span class="dot"></span> Online
+      </span>
+    </div>
+  </header>
+
+  <main id="main">
+    <!-- ============ HERO ============ -->
+    <section class="dl-hero">
+      <div class="container">
+        <div class="dl-hero-inner">
+          <span class="dl-hero-eyebrow">
+            <span style="width:8px;height:8px;border-radius:50%;background:#2dd4bf;box-shadow:0 0 8px #2dd4bf;" aria-hidden="true"></span>
+            Offline Learning Packs
+          </span>
+          <h1 class="dl-hero-title">
+            Download once. <span class="dl-hero-title-accent">Learn forever.</span>
+          </h1>
+          <p class="dl-hero-lede">
+            Each pack contains complete lessons, quizzes, and pre-generated AI explanations — a full week of learning that fits in under 500 KB. Download once and it works forever, without internet.
+          </p>
+
+          <div class="dl-summary" id="download-summary" hidden>
+            <div class="dl-summary-item">
+              <span class="dl-summary-icon" aria-hidden="true">📦</span>
+              <div>
+                <div class="dl-summary-value" id="downloaded-count">0</div>
+                <div class="dl-summary-label">Packs downloaded</div>
+              </div>
+            </div>
+            <div class="dl-summary-item">
+              <span class="dl-summary-icon" aria-hidden="true">💾</span>
+              <div>
+                <div class="dl-summary-value" id="storage-used">0 KB</div>
+                <div class="dl-summary-label">Storage used</div>
+              </div>
+            </div>
+            <a href="/pages/offline-library.html" class="dl-summary-link">Open Library →</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ FILTERS ============ -->
+    <section class="dl-filters-wrap">
+      <div class="container">
+        <div class="dl-filters" role="group" aria-label="Filter packs">
+          <div class="dl-filter">
+            <label class="dl-filter-label" for="filter-subject">Subject</label>
+            <select id="filter-subject">
+              <option value="">All subjects</option>
+            </select>
+          </div>
+          <div class="dl-filter">
+            <label class="dl-filter-label" for="filter-level">Class level</label>
+            <select id="filter-level">
+              <option value="">All levels</option>
+            </select>
+          </div>
+          <div class="dl-filter">
+            <label class="dl-filter-label" for="filter-status">Status</label>
+            <select id="filter-status">
+              <option value="all">All packs</option>
+              <option value="offline">Downloaded only</option>
+              <option value="updates">Updates available</option>
+              <option value="available">Not yet downloaded</option>
+            </select>
+          </div>
+          <div class="dl-filter">
+            <label class="dl-filter-label" for="filter-sort">Sort by</label>
+            <select id="filter-sort">
+              <option value="name">Name (A–Z)</option>
+              <option value="size">Size (smallest)</option>
+              <option value="recent">Recently updated</option>
+            </select>
+          </div>
+          <button class="dl-filter-reset" id="reset-filters-btn">Reset</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ GRID ============ -->
+    <section class="dl-section" aria-labelledby="packs-heading">
+      <div class="container">
+        <h2 id="packs-heading" class="sr-only">Available packs</h2>
+
+        <div id="packs-loading" class="dl-loading">
+          <div class="dl-spinner" aria-hidden="true"></div>
+          <p>Loading learning packs…</p>
+        </div>
+
+        <div id="packs-error" class="dl-empty" hidden>
+          <div class="dl-empty-icon" aria-hidden="true">⚠️</div>
+          <h3 class="dl-empty-title">Could not load packs</h3>
+          <p class="dl-empty-text" id="packs-error-message"></p>
+          <button class="btn btn-primary" id="retry-btn">Try again</button>
+        </div>
+
+        <div id="packs-empty" class="dl-empty" hidden>
+          <div class="dl-empty-icon" aria-hidden="true">🔍</div>
+          <h3 class="dl-empty-title">No packs match your filters</h3>
+          <p class="dl-empty-text">Try clearing the filters or choosing a different level.</p>
+          <button class="btn btn-secondary" id="reset-filters-empty-btn">Reset filters</button>
+        </div>
+
+        <div id="packs-grid" class="dl-grid" hidden></div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-bottom" style="border-top:none;padding-top:0">
+        <span>© <span id="year"></span> Kelvin Ikpeni Offline AI Learning Hub</span>
+        <span>Downloads are checksum-verified before saving.</span>
+      </div>
+    </div>
+  </footer>
+
+  <div class="floating-controls" aria-label="Quick settings">
+    <button id="data-saver-toggle" class="toggle-pill" aria-pressed="false" title="Reduce data usage">
+      <span class="dot" aria-hidden="true"></span> Data Saver
+    </button>
+    <button id="demo-offline-toggle" class="toggle-pill" aria-pressed="false" title="Simulate offline for demo">
+      <span class="dot" aria-hidden="true"></span> Demo Offline
+    </button>
+  </div>
+
+  <script src="/js/app.js"></script>
+  <script src="/js/offline-db.js"></script>
+  <script src="/js/connectivity.js"></script>
+  <script src="/js/download.js"></script>
+</body>
+</html>

@@ -1,0 +1,24 @@
+# Kelvin Ikpeni Offline AI Learning Hub
+# https://github.com/yourusername/kelvin-hub
+
+User-agent: *
+Allow: /
+Allow: /pages/
+Allow: /css/
+Allow: /js/
+Allow: /assets/
+Allow: /manifest.json
+
+# Block admin and API endpoints from indexing
+Disallow: /pages/admin.html
+Disallow: /api/
+Disallow: /pages/classroom.html
+
+# Block internal demo toggles
+Disallow: /*?demo=
+
+# Sitemap
+Sitemap: /sitemap.xml
+
+# Crawl-delay (be polite — the app is designed for low bandwidth)
+Crawl-delay: 1

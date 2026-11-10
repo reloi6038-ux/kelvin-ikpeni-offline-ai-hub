@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#0f2027">
+  <title>Dashboard — Kelvin Hub</title>
+  <link rel="manifest" href="/manifest.json">
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="stylesheet" href="/css/dashboard.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <header class="site-header">
+    <div class="container">
+      <a href="/" class="brand" aria-label="Kelvin Hub — home">
+        <span class="brand-mark" aria-hidden="true">K</span>
+        <span>Kelvin Hub</span>
+      </a>
+      <button class="nav-toggle" aria-label="Toggle navigation" aria-expanded="false" id="nav-toggle">☰</button>
+      <nav class="main-nav" id="main-nav" aria-label="Primary navigation">
+        <a href="/pages/dashboard.html" aria-current="page">Dashboard</a>
+        <a href="/pages/courses.html">Courses</a>
+        <a href="/pages/download-center.html">Offline Packs</a>
+        <a href="/pages/ai-tutor.html">AI Tutor</a>
+        <a href="/pages/offline-library.html">My Library</a>
+        <a href="/pages/help.html">Help</a>
+      </nav>
+      <span id="connection-badge" class="badge badge-online" role="status" aria-live="polite">
+        <span class="dot"></span> Online
+      </span>
+    </div>
+  </header>
+
+  <main id="main">
+    <!-- HERO -->
+    <section class="db-hero">
+      <div class="container">
+        <div class="db-hero-inner">
+          <div class="db-hero-top">
+            <div class="db-greeting-block">
+              <div class="db-greeting">
+                <span class="db-greeting-emoji" id="db-greeting-emoji">👋</span>
+                <span id="db-greeting-text">Welcome back</span>
+              </div>
+              <h1 class="db-hero-title">Your learning dashboard</h1>
+              <p class="db-hero-sub">Track your progress, revisit lessons, and see what to focus on next.</p>
+              <div id="db-sync-indicator" class="db-sync-indicator" hidden>
+                <span class="db-sync-dot" aria-hidden="true"></span>
+                <span>Syncing your activity…</span>
+              </div>
+            </div>
+
+            <div class="db-streak-badge" id="db-streak-badge" hidden>
+              <div class="db-streak-flame" aria-hidden="true">🔥</div>
+              <div class="db-streak-info">
+                <div class="db-streak-value" id="db-streak-value">0</div>
+                <div class="db-streak-label">day streak</div>
+                <div class="db-streak-days" id="db-streak-days"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- LOADING -->
+    <div id="db-loading" class="db-loading">
+      <div class="db-spinner" aria-hidden="true"></div>
+      <p>Loading your progress…</p>
+    </div>
+
+    <!-- EMPTY -->
+    <div id="db-empty" class="db-empty" hidden>
+      <div class="db-empty-icon" aria-hidden="true">🚀</div>
+      <h2 class="db-empty-title">Let's get started</h2>
+      <p class="db-empty-text">Download a learning pack to see your progress here. Your data stays on your device.</p>
+      <a href="/pages/download-center.html" class="btn btn-primary">Browse learning packs</a>
+    </div>
+
+    <!-- CONTENT -->
+    <div id="db-content" hidden>
+      <div class="container">
+        <!-- STAT GRID -->
+        <section class="db-section" aria-labelledby="stats-heading" style="padding-top: 0;">
+          <h2 id="stats-heading" class="sr-only">At a glance</h2>
+          <div class="db-stats-grid">
+            <div class="db-stat" data-reveal>
+              <div class="db-stat-head">
+                <div class="db-stat-icon db-stat-icon-blue" aria-hidden="true">📝</div>
+              </div>
+              <div class="db-stat-value" id="stat-attempts">0</div>
+              <div class="db-stat-label">Quizzes taken</div>
+            </div>
+
+            <div class="db-stat" data-reveal>
+              <div class="db-stat-head">
+                <div class="db-stat-icon db-stat-icon-green" aria-hidden="true">🎯</div>
+              </div>
+              <div class="db-stat-circular">
+                <div class="db-circle">
+                  <svg class="db-circle-svg" viewBox="0 0 60 60">
+                    <defs>
+                      <linearGradient id="dbGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" stop-color="#2dd4bf"/>
+                        <stop offset="100%" stop-color="#14b8a6"/>
+                      </linearGradient>
+                    </defs>
+                    <circle class="db-circle-track" cx="30" cy="30" r="26"/>
+                    <circle class="db-circle-fill" id="db-circle-fill" cx="30" cy="30" r="26"/>
+                  </svg>
+                  <div class="db-circle-text" id="stat-avg">—</div>
+                </div>
+                <div>
+                  <div class="db-stat-label" style="margin-top: 0;">Average score</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="db-stat" data-reveal>
+              <div class="db-stat-head">
+                <div class="db-stat-icon db-stat-icon-amber" aria-hidden="true">📦</div>
+              </div>
+              <div class="db-stat-value" id="stat-packs">0</div>
+              <div class="db-stat-label">Packs offline</div>
+            </div>
+
+            <div class="db-stat" data-reveal>
+              <div class="db-stat-head">
+                <div class="db-stat-icon db-stat-icon-purple" aria-hidden="true">📚</div>
+              </div>
+              <div class="db-stat-value" id="stat-lessons">0</div>
+              <div class="db-stat-label">Lessons available</div>
+            </div>
+          </div>
+        </section>
+
+        <!-- PENDING SYNC -->
+        <section class="db-section" id="db-pending-section" style="padding-top: 0;" hidden>
+          <div class="db-pending">
+            <div>
+              <div class="db-pending-title">Offline activity pending sync</div>
+              <p class="db-pending-text" id="db-pending-text"></p>
+            </div>
+            <button class="btn btn-primary btn-sm" id="db-sync-btn">Sync now</button>
+          </div>
+        </section>
+
+        <!-- MAIN LAYOUT -->
+        <section class="db-section" style="padding-top: 0;">
+          <div class="db-layout">
+            <div class="db-col">
+              <div class="db-card" data-reveal>
+                <div class="db-card-header">
+                  <h2 class="db-card-title">Continue learning</h2>
+                  <a href="/pages/offline-library.html" class="db-card-link">Open library →</a>
+                </div>
+                <div id="db-continue-list" class="db-continue-list"></div>
+              </div>
+
+              <div class="db-card" data-reveal>
+                <div class="db-card-header">
+                  <h2 class="db-card-title">Focus areas</h2>
+                  <span class="db-card-hint">Based on your answers</span>
+                </div>
+                <div id="db-weak-topics" class="db-weak-grid"></div>
+              </div>
+
+              <div class="db-card" data-reveal>
+                <div class="db-card-header">
+                  <h2 class="db-card-title">Recent activity</h2>
+                  <a href="/pages/quizzes.html" class="db-card-link">All quizzes →</a>
+                </div>
+                <div id="db-timeline" class="db-timeline"></div>
+              </div>
+            </div>
+
+            <div class="db-col">
+              <div class="db-card" data-reveal>
+                <div class="db-card-header">
+                  <h2 class="db-card-title">Your offline library</h2>
+                </div>
+                <div class="db-storage">
+                  <div class="db-storage-bar">
+                    <div class="db-storage-fill" id="db-storage-fill"></div>
+                  </div>
+                  <div class="db-storage-meta">
+                    <span id="db-storage-used">0 KB used</span>
+                    <span id="db-storage-count">0 packs</span>
+                  </div>
+                </div>
+                <div id="db-pack-list" class="db-pack-list"></div>
+              </div>
+
+              <div class="db-card" data-reveal>
+                <div class="db-card-header">
+                  <h2 class="db-card-title">Quick actions</h2>
+                </div>
+                <div class="db-quick-grid">
+                  <a href="/pages/offline-library.html" class="db-quick-card" data-reveal>
+                    <div class="db-quick-icon db-quick-icon-blue" aria-hidden="true">📖</div>
+                    <span>Read a lesson</span>
+                  </a>
+                  <a href="/pages/quizzes.html" class="db-quick-card" data-reveal>
+                    <div class="db-quick-icon db-quick-icon-green" aria-hidden="true">✏️</div>
+                    <span>Take a quiz</span>
+                  </a>
+                  <a href="/pages/ai-tutor.html" class="db-quick-card" data-reveal>
+                    <div class="db-quick-icon db-quick-icon-amber" aria-hidden="true">✨</div>
+                    <span>Ask the tutor</span>
+                  </a>
+                  <a href="/pages/download-center.html" class="db-quick-card" data-reveal>
+                    <div class="db-quick-icon db-quick-icon-purple" aria-hidden="true">⬇</div>
+                    <span>Download pack</span>
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-bottom" style="border-top:none;padding-top:0">
+        <span>© <span id="year"></span> Kelvin Ikpeni Offline AI Learning Hub</span>
+        <span>All your learning data is stored on this device.</span>
+      </div>
+    </div>
+  </footer>
+
+  <div class="floating-controls" aria-label="Quick settings">
+    <button id="data-saver-toggle" class="toggle-pill" aria-pressed="false" title="Reduce data usage">
+      <span class="dot" aria-hidden="true"></span> Data Saver
+    </button>
+    <button id="demo-offline-toggle" class="toggle-pill" aria-pressed="false" title="Simulate offline for demo">
+      <span class="dot" aria-hidden="true"></span> Demo Offline
+    </button>
+  </div>
+
+  <script src="/js/app.js"></script>
+  <script src="/js/offline-db.js"></script>
+  <script src="/js/connectivity.js"></script>
+  <script src="/js/dashboard.js"></script>
+</body>
+</html>

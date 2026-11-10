@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#0f2027">
+  <title>Quizzes — Kelvin Hub</title>
+  <link rel="manifest" href="/manifest.json">
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="stylesheet" href="/css/quiz.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <header class="site-header">
+    <div class="container">
+      <a href="/" class="brand" aria-label="Kelvin Hub — home">
+        <span class="brand-mark" aria-hidden="true">K</span>
+        <span>Kelvin Hub</span>
+      </a>
+      <button class="nav-toggle" aria-label="Toggle navigation" aria-expanded="false" id="nav-toggle">☰</button>
+      <nav class="main-nav" id="main-nav" aria-label="Primary navigation">
+        <a href="/pages/dashboard.html">Dashboard</a>
+        <a href="/pages/courses.html">Courses</a>
+        <a href="/pages/download-center.html">Offline Packs</a>
+        <a href="/pages/ai-tutor.html">AI Tutor</a>
+        <a href="/pages/offline-library.html">My Library</a>
+        <a href="/pages/help.html">Help</a>
+      </nav>
+      <span id="connection-badge" class="badge badge-online" role="status" aria-live="polite">
+        <span class="dot"></span> Online
+      </span>
+    </div>
+  </header>
+
+  <main id="main">
+    <!-- ============ LIST VIEW ============ -->
+    <div id="view-list">
+      <section class="qz-hero">
+        <div class="container">
+          <div class="qz-hero-inner">
+            <span class="qz-hero-eyebrow">✏️ Test Your Knowledge</span>
+            <h1 class="qz-hero-title">
+              Practice makes <span class="qz-hero-title-accent">progress.</span>
+            </h1>
+            <p class="qz-hero-sub">
+              Take quizzes offline with instant feedback. Every answer comes with an explanation, and your scores sync automatically when you reconnect.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section class="qz-section">
+        <div class="container">
+          <div id="list-loading" class="qz-loading">
+            <div class="qz-spinner" aria-hidden="true"></div>
+            <p>Loading quizzes…</p>
+          </div>
+
+          <div id="list-empty" class="qz-empty" hidden>
+            <div class="qz-empty-icon" aria-hidden="true">✏️</div>
+            <h2 class="qz-empty-title">No quizzes downloaded yet</h2>
+            <p class="qz-empty-text">Quizzes come with your learning packs. Download one to start practicing offline.</p>
+            <a href="/pages/download-center.html" class="btn btn-primary">Browse Learning Packs</a>
+          </div>
+
+          <div id="list-grid" class="qz-list" hidden></div>
+
+          <div id="pending-panel" class="qz-pending" hidden>
+            <div>
+              <strong id="pending-count">0</strong>
+              <span id="pending-label">quizzes waiting to sync</span>
+            </div>
+            <button class="btn btn-sm btn-secondary" id="sync-now-btn">Sync now</button>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- ============ RUNNER VIEW ============ -->
+    <div id="view-runner" class="qz-runner" hidden>
+      <div class="qz-runner-head">
+        <div class="qz-runner-head-row">
+          <button class="qz-exit-btn" id="exit-runner">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M19 12H5M12 19l-7-7 7-7"/>
+            </svg>
+            Exit
+          </button>
+          <div class="qz-runner-title-block">
+            <h2 class="qz-runner-title" id="runner-title">Quiz</h2>
+            <p class="qz-runner-sub" id="runner-sub">Question 1 of 4</p>
+          </div>
+          <div class="qz-timer" id="runner-timer" hidden>
+            ⏱ <span id="timer-value">00:00</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="qz-runner-progress">
+        <div class="qz-runner-progress-fill" id="runner-progress-fill"></div>
+      </div>
+
+      <div class="qz-runner-body" id="runner-body">
+        <div class="qz-question-wrap" id="runner-question-wrap"></div>
+      </div>
+
+      <div class="qz-dots" id="runner-dots"></div>
+
+      <div class="qz-runner-controls">
+        <button class="qz-nav-btn" id="prev-btn" disabled>← Prev</button>
+        <button class="qz-submit-btn" id="submit-btn" hidden>Submit Quiz</button>
+        <button class="qz-nav-btn" id="next-btn">Next →</button>
+      </div>
+    </div>
+
+    <!-- ============ RESULTS VIEW ============ -->
+    <div id="view-results" class="qz-runner" hidden style="position: static; background: var(--bg);">
+      <div class="qz-results" id="results-content"></div>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-bottom" style="border-top:none;padding-top:0">
+        <span>© <span id="year"></span> Kelvin Ikpeni Offline AI Learning Hub</span>
+        <span>Scores are re-verified on the server when you sync.</span>
+      </div>
+    </div>
+  </footer>
+
+  <div class="floating-controls" aria-label="Quick settings">
+    <button id="data-saver-toggle" class="toggle-pill" aria-pressed="false" title="Reduce data usage">
+      <span class="dot" aria-hidden="true"></span> Data Saver
+    </button>
+    <button id="demo-offline-toggle" class="toggle-pill" aria-pressed="false" title="Simulate offline for demo">
+      <span class="dot" aria-hidden="true"></span> Demo Offline
+    </button>
+  </div>
+
+  <script src="/js/app.js"></script>
+  <script src="/js/offline-db.js"></script>
+  <script src="/js/connectivity.js"></script>
+  <script src="/js/quiz-runner.js"></script>
+</body>
+</html>

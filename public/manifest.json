@@ -1,0 +1,24 @@
+﻿{
+  "name": "Kelvin Ikpeni Offline AI Learning Hub",
+  "short_name": "Kelvin Hub",
+  "description": "Download learning packs once. Learn offline, forever.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#0f2027",
+  "theme_color": "#0f2027",
+  "categories": ["education", "productivity"],
+  "lang": "en",
+  "dir": "ltr",
+  "icons": [
+    { "src": "/assets/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/assets/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/assets/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ],
+  "shortcuts": [
+    { "name": "My Library", "short_name": "Library", "url": "/pages/offline-library.html", "description": "Open downloaded lessons" },
+    { "name": "AI Tutor", "short_name": "Tutor", "url": "/pages/ai-tutor.html", "description": "Ask the offline AI tutor" },
+    { "name": "Download Center", "short_name": "Download", "url": "/pages/download-center.html", "description": "Get new learning packs" }
+  ]
+}
