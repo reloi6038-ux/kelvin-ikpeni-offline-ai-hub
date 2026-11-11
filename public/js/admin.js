@@ -1,4 +1,4 @@
-// public/js/admin.js — Premium admin dashboard
+// public/js/admin.js — Premium admin dashboard with PDF import
 (function () {
   'use strict';
 
@@ -9,7 +9,8 @@
     formQuestions: [],
     editQuizQuestions: [],
     editQuizLoadedId: null,
-    classroomPollHandle: null
+    classroomPollHandle: null,
+    importPreview: null
   };
 
   const dom = {
@@ -80,7 +81,9 @@
 
   async function adminFetch(path, options = {}) {
     const headers = Object.assign({}, options.headers, { 'X-Admin-Key': state.adminKey || '' });
-    if (options.body && !headers['Content-Type']) headers['Content-Type'] = 'application/json';
+    if (options.body && !headers['Content-Type'] && !(options.body instanceof FormData)) {
+      headers['Content-Type'] = 'application/json';
+    }
     return fetch(path, Object.assign({}, options, { headers }));
   }
 
@@ -118,6 +121,17 @@
     else if (view === 'content') loadContent();
     else if (view === 'create-quiz') { state.formQuestions = []; renderQuestions(); }
     else if (view === 'classroom') initClassroomView();
+    else if (view === 'import') populateImportSubjects();
+  }
+
+  function populateImportSubjects() {
+    const sel = document.getElementById('import-subject');
+    if (!sel) return;
+    if (state.subjects.length === 0) return;
+    const current = sel.value;
+    sel.innerHTML = '<option value="">Select subject…</option>' +
+      state.subjects.map(s => `<option value="${s._id}">${esc(s.name)}</option>`).join('');
+    if (current) sel.value = current;
   }
 
   // ------------------------------------------------------------------
@@ -188,8 +202,11 @@
       const json = await res.json();
       state.subjects = json.data || [];
       const opts = state.subjects.map(s => `<option value="${s._id}">${esc(s.name)}</option>`).join('');
-      document.getElementById('cl-subject').innerHTML = '<option value="">Select subject…</option>' + opts;
-      document.getElementById('cq-subject').innerHTML = '<option value="">Select subject…</option>' + opts;
+      const cl = document.getElementById('cl-subject');
+      const cq = document.getElementById('cq-subject');
+      if (cl) cl.innerHTML = '<option value="">Select subject…</option>' + opts;
+      if (cq) cq.innerHTML = '<option value="">Select subject…</option>' + opts;
+      populateImportSubjects();
     } catch (err) {
       console.warn('Subjects load failed:', err.message);
     }
@@ -238,7 +255,7 @@
   });
 
   // ------------------------------------------------------------------
-  // Quiz question editor (shared for create + edit)
+  // Quiz question editor
   // ------------------------------------------------------------------
   function renderQuestionEditor(container, questions, stateKey) {
     container.innerHTML = questions.map((q, qi) => `
@@ -262,7 +279,6 @@
       </div>
     `).join('');
 
-    // Wire
     container.querySelectorAll('[data-remove]').forEach(b => b.addEventListener('click', () => {
       const arr = stateKey === 'create' ? state.formQuestions : state.editQuizQuestions;
       arr.splice(Number(b.dataset.remove), 1);
@@ -814,6 +830,218 @@
       toast('Stop failed: ' + err.message, 'error');
     }
   }
+
+  // ------------------------------------------------------------------
+  // PDF import
+  // ------------------------------------------------------------------
+  (function initImport() {
+    const uploadStep = document.getElementById('import-upload-step');
+    const previewStep = document.getElementById('import-preview-step');
+    const form = document.getElementById('import-form');
+    const dropzone = document.getElementById('import-dropzone');
+    const fileInput = document.getElementById('import-file');
+    const filenameEl = document.getElementById('import-filename');
+    const errorEl = document.getElementById('import-error');
+    const progressEl = document.getElementById('import-progress');
+    const submitBtn = document.getElementById('import-submit-btn');
+    if (!form) return;
+
+    let selectedFile = null;
+
+    dropzone.addEventListener('click', () => fileInput.click());
+
+    ['dragenter', 'dragover'].forEach((evt) => {
+      dropzone.addEventListener(evt, (e) => {
+        e.preventDefault();
+        dropzone.style.borderColor = '#2dd4bf';
+        dropzone.style.background = '#f0fdfa';
+      });
+    });
+    ['dragleave', 'drop'].forEach((evt) => {
+      dropzone.addEventListener(evt, (e) => {
+        e.preventDefault();
+        dropzone.style.borderColor = '#cbd5e1';
+        dropzone.style.background = '#f8fafc';
+      });
+    });
+    dropzone.addEventListener('drop', (e) => {
+      e.preventDefault();
+      if (e.dataTransfer.files.length > 0) setFile(e.dataTransfer.files[0]);
+    });
+
+    fileInput.addEventListener('change', () => {
+      if (fileInput.files.length > 0) setFile(fileInput.files[0]);
+    });
+
+    function setFile(file) {
+      const lower = file.name.toLowerCase();
+      if (!lower.endsWith('.pdf') && !lower.endsWith('.docx')) {
+        showError('Only PDF and .docx files are supported');
+        return;
+      }
+      if (file.size > 10 * 1024 * 1024) {
+        showError('File is too large (max 10MB)');
+        return;
+      }
+      selectedFile = file;
+      filenameEl.textContent = `${file.name} · ${Math.round(file.size / 1024)} KB`;
+      filenameEl.style.color = '#166534';
+      errorEl.hidden = true;
+    }
+
+    function showError(msg) {
+      errorEl.hidden = false;
+      errorEl.textContent = msg;
+    }
+
+    function clearError() {
+      errorEl.hidden = true;
+      errorEl.textContent = '';
+    }
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      clearError();
+
+      if (!selectedFile) {
+        showError('Choose a PDF or .docx file first');
+        return;
+      }
+
+      const subjectId = document.getElementById('import-subject').value;
+      if (!subjectId) {
+        showError('Select a subject first');
+        return;
+      }
+
+      const fd = new FormData();
+      fd.append('file', selectedFile);
+      fd.append('subjectId', subjectId);
+      fd.append('level', document.getElementById('import-level').value);
+
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Uploading…';
+      progressEl.hidden = false;
+
+      try {
+        const res = await adminFetch('/api/admin/lessons/import', {
+          method: 'POST',
+          body: fd
+        });
+        const json = await res.json();
+        if (!res.ok) throw new Error(json.error || `HTTP ${res.status}`);
+
+        state.importPreview = json.data.preview;
+        showPreview(json.data);
+      } catch (err) {
+        showError('Import failed: ' + err.message);
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = '⬆ Upload & extract';
+        progressEl.hidden = true;
+      }
+    });
+
+    function showPreview(data) {
+      const p = data.preview;
+      document.getElementById('preview-title').value = p.title || '';
+      document.getElementById('preview-summary').value = p.summary || '';
+      document.getElementById('preview-content').value = p.content || '';
+      document.getElementById('preview-keypoints').value = (p.keyPoints || []).join('\n');
+      document.getElementById('preview-source').value = p.sourceRef || '';
+
+      const badge = document.getElementById('import-provider-badge');
+      const providerLabel = data.provider === 'heuristic'
+        ? '⚠️ Heuristic extraction (no AI configured)'
+        : `✨ Structured by ${data.provider}`;
+      badge.textContent = providerLabel;
+      badge.style.background = data.provider === 'heuristic' ? '#fef3c7' : '#dbeafe';
+      badge.style.color = data.provider === 'heuristic' ? '#92400e' : '#1e40af';
+
+      const quizEl = document.getElementById('preview-quiz');
+      const quiz = p.quiz;
+      if (quiz && quiz.questions && quiz.questions.length > 0) {
+        quizEl.innerHTML = `
+          <p style="font-weight:600;margin:0 0 12px;">${esc(quiz.title || '')} · ${quiz.questions.length} question(s)</p>
+          ${quiz.questions.map((q, i) => `
+            <div style="padding:12px;border:1px solid #e2e8f0;border-radius:8px;margin-bottom:8px;background:#f8fafc;">
+              <div style="font-weight:600;font-size:0.85rem;margin-bottom:6px;">Q${i + 1}. ${esc(q.questionText)}</div>
+              <ul style="margin:6px 0 0;padding-left:20px;font-size:0.82rem;color:#475569;">
+                ${q.options.map((opt, oi) => `
+                  <li style="${oi === q.correctIndex ? 'color:#16a34a;font-weight:600;' : ''}">
+                    ${esc(opt)} ${oi === q.correctIndex ? '✓' : ''}
+                  </li>
+                `).join('')}
+              </ul>
+              ${q.explanation ? `<div style="margin-top:6px;font-size:0.78rem;color:#64748b;">💡 ${esc(q.explanation)}</div>` : ''}
+            </div>
+          `).join('')}
+        `;
+      } else {
+        quizEl.innerHTML = '<p style="color:#64748b;font-size:0.85rem;">No quiz generated</p>';
+      }
+
+      uploadStep.hidden = true;
+      previewStep.hidden = false;
+    }
+
+    document.getElementById('preview-cancel-btn').addEventListener('click', () => {
+      uploadStep.hidden = false;
+      previewStep.hidden = true;
+      state.importPreview = null;
+      selectedFile = null;
+      fileInput.value = '';
+      filenameEl.textContent = 'PDF or .docx';
+      filenameEl.style.color = '#64748b';
+    });
+
+    document.getElementById('preview-approve-btn').addEventListener('click', async () => {
+      if (!state.importPreview) return;
+      const btn = document.getElementById('preview-approve-btn');
+      btn.disabled = true;
+      btn.textContent = 'Saving…';
+
+      const payload = {
+        subjectId: document.getElementById('import-subject').value,
+        lesson: {
+          title: document.getElementById('preview-title').value,
+          summary: document.getElementById('preview-summary').value,
+          content: document.getElementById('preview-content').value,
+          keyPoints: document.getElementById('preview-keypoints').value
+            .split('\n').map(s => s.trim()).filter(Boolean),
+          sourceRef: document.getElementById('preview-source').value,
+          level: document.getElementById('import-level').value,
+          isPublished: document.getElementById('preview-publish').checked
+        },
+        quiz: state.importPreview.quiz,
+        createPack: document.getElementById('preview-create-pack').checked
+      };
+
+      try {
+        const json = await adminJSON('/api/admin/lessons/import/approve', {
+          method: 'POST',
+          body: JSON.stringify(payload)
+        });
+
+        toast(`Imported "${json.data.lesson.title}"${json.data.quiz ? ' with quiz' : ''}${json.data.pack ? ' + pack' : ''}`, 'success');
+
+        uploadStep.hidden = false;
+        previewStep.hidden = true;
+        state.importPreview = null;
+        selectedFile = null;
+        fileInput.value = '';
+        filenameEl.textContent = 'PDF or .docx';
+        filenameEl.style.color = '#64748b';
+        form.reset();
+        await loadSubjects();
+      } catch (err) {
+        toast('Save failed: ' + err.message, 'error');
+      } finally {
+        btn.disabled = false;
+        btn.textContent = '✅ Approve & save';
+      }
+    });
+  })();
 
   // ------------------------------------------------------------------
   // Toast + utils

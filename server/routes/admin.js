@@ -13,6 +13,8 @@ const Feedback     = require('../models/Feedback');
 
 const { requireAdmin } = require('../middleware/auth');
 const aiService = require('../services/aiService');
+const contentImporter = require('../services/contentImporter');
+const { upload } = require('../middleware/upload');
 const { ok, fail, parsePagination, EDUCATION_LEVELS, CURRICULA, CONTENT_TYPES, slugify } = require('../utils/helpers');
 const logger = require('../utils/logger');
 
@@ -81,8 +83,8 @@ router.get('/stats', async (req, res) => {
 // LESSONS — CRUD
 // ============================================================
 
-// GET /api/admin/lessons/:id — get a single lesson (admin view)
-router.get('/lessons/:id', async (req, res) => {   // ← NEW
+// GET /api/admin/lessons/:id
+router.get('/lessons/:id', async (req, res) => {
   try {
     if (!mongoose.isValidObjectId(req.params.id)) {
       return fail(res, 400, 'Invalid lesson id', 'INVALID_ID');
@@ -116,7 +118,7 @@ router.get('/lessons/:id', async (req, res) => {   // ← NEW
   }
 });
 
-// POST /api/admin/lessons — create
+// POST /api/admin/lessons
 router.post('/lessons', async (req, res) => {
   try {
     const b = req.body || {};
@@ -167,7 +169,7 @@ router.post('/lessons', async (req, res) => {
   }
 });
 
-// PATCH /api/admin/lessons/:id — update
+// PATCH /api/admin/lessons/:id
 router.patch('/lessons/:id', async (req, res) => {
   try {
     if (!mongoose.isValidObjectId(req.params.id)) {
@@ -201,8 +203,8 @@ router.patch('/lessons/:id', async (req, res) => {
   }
 });
 
-// DELETE /api/admin/lessons/:id — unpublish
-router.delete('/lessons/:id', async (req, res) => {   // ← NEW
+// DELETE /api/admin/lessons/:id
+router.delete('/lessons/:id', async (req, res) => {
   try {
     if (!mongoose.isValidObjectId(req.params.id)) {
       return fail(res, 400, 'Invalid lesson id', 'INVALID_ID');
@@ -215,6 +217,219 @@ router.delete('/lessons/:id', async (req, res) => {   // ← NEW
   } catch (err) {
     logger.error(`DELETE /api/admin/lessons/:id → ${err.message}`);
     return fail(res, 500, 'Failed to unpublish lesson', 'LESSON_DELETE_ERROR');
+  }
+});
+
+// ============================================================
+// IMPORT: Upload PDF/DOCX → AI extracts → preview
+// POST /api/admin/lessons/import
+// ============================================================
+router.post('/lessons/import', upload.single('file'), async (req, res) => {
+  try {
+    if (!req.file) {
+      return fail(res, 400, 'No file uploaded', 'NO_FILE');
+    }
+
+    const b = req.body || {};
+    if (!mongoose.isValidObjectId(b.subjectId)) {
+      return fail(res, 400, 'subjectId is required (ObjectId)', 'INVALID_PAYLOAD');
+    }
+
+    const subject = await Subject.findById(b.subjectId).select('name').lean();
+    if (!subject) return fail(res, 404, 'Subject not found', 'SUBJECT_NOT_FOUND');
+
+    logger.info(`Importing file: ${req.file.originalname} (${req.file.size} bytes)`);
+
+    let extracted;
+    try {
+      extracted = await contentImporter.extractText(
+        req.file.buffer,
+        req.file.mimetype,
+        req.file.originalname
+      );
+    } catch (err) {
+      return fail(res, 400, err.message, 'EXTRACT_FAILED');
+    }
+
+    if (!extracted.text || extracted.text.trim().length < 100) {
+      return fail(res, 400,
+        'Extracted text is too short. The PDF may be a scanned image — try a text-based PDF or .docx.',
+        'TEXT_TOO_SHORT');
+    }
+
+    let structured;
+    try {
+      structured = await contentImporter.structureText(extracted.text, {
+        subjectName: subject.name,
+        level: EDUCATION_LEVELS.includes(b.level) ? b.level : 'JSS2',
+        sourceRef: b.sourceRef || req.file.originalname
+      });
+    } catch (err) {
+      logger.error(`Structuring failed: ${err.message}`);
+      return fail(res, 500, 'Could not structure the content', 'STRUCTURE_FAILED');
+    }
+
+    return res.json(ok({
+      preview: {
+        title: structured.title,
+        summary: structured.summary,
+        content: structured.content,
+        level: structured.level || b.level || 'JSS2',
+        keyPoints: structured.keyPoints || [],
+        keywords: structured.keywords || [],
+        sourceRef: structured.sourceRef || b.sourceRef || req.file.originalname,
+        quiz: structured.quiz || { title: '', questions: [] }
+      },
+      provider: structured.provider,
+      rawTextLength: extracted.text.length,
+      pages: extracted.pages,
+      originalName: req.file.originalname,
+      warning: ADMIN_WARNING
+    }));
+  } catch (err) {
+    logger.error(`POST /api/admin/lessons/import → ${err.message}`);
+    return fail(res, 500, err.message || 'Import failed', 'IMPORT_ERROR');
+  }
+});
+
+// ============================================================
+// APPROVE: Save a previously-previewed import
+// POST /api/admin/lessons/import/approve
+// ============================================================
+router.post('/lessons/import/approve', async (req, res) => {
+  try {
+    const b = req.body || {};
+    if (!mongoose.isValidObjectId(b.subjectId)) {
+      return fail(res, 400, 'subjectId is required', 'INVALID_PAYLOAD');
+    }
+    if (!b.lesson || !b.lesson.title || !b.lesson.content) {
+      return fail(res, 400, 'lesson.title and lesson.content are required', 'INVALID_PAYLOAD');
+    }
+
+    const subject = await Subject.findById(b.subjectId).lean();
+    if (!subject) return fail(res, 404, 'Subject not found', 'SUBJECT_NOT_FOUND');
+
+    const lesson = await Lesson.create({
+      subjectId: subject._id,
+      title: String(b.lesson.title).slice(0, 160),
+      summary: String(b.lesson.summary || '').slice(0, 400),
+      content: String(b.lesson.content),
+      level: EDUCATION_LEVELS.includes(b.lesson.level) ? b.lesson.level : 'JSS2',
+      curriculum: 'Nigerian',
+      contentType: 'verified_curriculum',
+      language: 'en',
+      order: 0,
+      estimatedMinutes: 10,
+      keyPoints: Array.isArray(b.lesson.keyPoints) ? b.lesson.keyPoints.slice(0, 15).map(String) : [],
+      keywords: Array.isArray(b.lesson.keywords) ? b.lesson.keywords.slice(0, 20).map(String) : [],
+      sourceRef: String(b.lesson.sourceRef || '').slice(0, 200),
+      isPublished: b.lesson.isPublished === true,
+      slug: slugify(b.lesson.title)
+    });
+
+    await Subject.updateOne({ _id: subject._id }, { $inc: { lessonCount: 1 } });
+
+    let quiz = null;
+    if (b.quiz && Array.isArray(b.quiz.questions) && b.quiz.questions.length > 0) {
+      const validQuestions = b.quiz.questions
+        .filter((q) =>
+          q.questionText &&
+          Array.isArray(q.options) &&
+          q.options.length >= 2 &&
+          typeof q.correctIndex === 'number' &&
+          q.correctIndex >= 0 &&
+          q.correctIndex < q.options.length
+        )
+        .slice(0, 20);
+
+      if (validQuestions.length > 0) {
+        quiz = await Quiz.create({
+          title: String(b.quiz.title || `${lesson.title} — Quiz`).slice(0, 160),
+          subjectId: subject._id,
+          lessonId: lesson._id,
+          level: lesson.level,
+          contentType: 'teacher_approved',
+          passingScore: 70,
+          isPublished: b.lesson.isPublished === true,
+          questions: validQuestions.map((q) => ({
+            questionText: String(q.questionText).slice(0, 800),
+            options: q.options.slice(0, 6).map((o) => String(o).slice(0, 200)),
+            correctIndex: q.correctIndex,
+            explanation: String(q.explanation || '').slice(0, 800),
+            difficulty: 'medium'
+          }))
+        });
+      }
+    }
+
+    let pack = null;
+    if (b.createPack === true) {
+      const packSlug = `${lesson.level.toLowerCase()}-${subject.slug}-${slugify(lesson.title).slice(0, 40)}`;
+      const preview = {
+        lessonCount: 1,
+        quizCount: quiz ? 1 : 0,
+        totalQuestions: quiz ? quiz.questions.length : 0,
+        estimatedMinutes: lesson.estimatedMinutes || 10
+      };
+      const sizeBytes = Buffer.byteLength(JSON.stringify(preview), 'utf8') + 2000;
+      const contentHash = crypto.createHash('sha256').update(JSON.stringify(preview)).digest('hex');
+
+      pack = await LearningPack.findOneAndUpdate(
+        { slug: packSlug },
+        {
+          $set: {
+            name: `${lesson.level} ${subject.name} — ${lesson.title}`,
+            description: lesson.summary || '',
+            subjectId: subject._id,
+            level: lesson.level,
+            curriculum: 'Nigerian',
+            language: 'en',
+            lessonIds: [lesson._id],
+            quizIds: quiz ? [quiz._id] : [],
+            lessonCount: 1,
+            quizCount: quiz ? 1 : 0,
+            estimatedMinutes: lesson.estimatedMinutes || 10,
+            sizeBytes,
+            contentHash,
+            checksum: contentHash,
+            isPublished: lesson.isPublished,
+            offlineReady: true
+          },
+          $setOnInsert: { slug: packSlug, version: 1 }
+        },
+        { upsert: true, returnDocument: 'after', setDefaultsOnInsert: true }
+      );
+
+      await Lesson.updateOne({ _id: lesson._id }, { $addToSet: { packIds: pack._id } });
+    }
+
+    return res.status(201).json(ok({
+      lesson: {
+        id: lesson._id.toString(),
+        title: lesson.title,
+        level: lesson.level,
+        isPublished: lesson.isPublished
+      },
+      quiz: quiz ? {
+        id: quiz._id.toString(),
+        title: quiz.title,
+        questionCount: quiz.questions.length
+      } : null,
+      pack: pack ? {
+        id: pack._id.toString(),
+        slug: pack.slug,
+        name: pack.name
+      } : null
+    }));
+  } catch (err) {
+    logger.error(`POST /api/admin/lessons/import/approve → ${err.message}`);
+    if (err.errors) {
+      const fieldErrors = Object.keys(err.errors).reduce((acc, k) => {
+        acc[k] = err.errors[k].message; return acc;
+      }, {});
+      return fail(res, 400, 'Validation failed', 'VALIDATION_ERROR', { fields: fieldErrors });
+    }
+    return fail(res, 500, 'Save failed', 'IMPORT_SAVE_ERROR');
   }
 });
 
@@ -255,8 +470,6 @@ router.post('/ai/warm', async (req, res) => {
 // ============================================================
 // PACKS
 // ============================================================
-
-// POST /api/admin/packs/build
 router.post('/packs/build', async (req, res) => {
   try {
     const b = req.body || {};
@@ -345,7 +558,6 @@ router.post('/packs/build', async (req, res) => {
   }
 });
 
-// GET /api/admin/packs
 router.get('/packs', async (req, res) => {
   try {
     const { page, limit, skip } = parsePagination(req.query);
@@ -373,7 +585,6 @@ router.get('/packs', async (req, res) => {
   }
 });
 
-// DELETE /api/admin/packs/:id
 router.delete('/packs/:id', async (req, res) => {
   try {
     if (!mongoose.isValidObjectId(req.params.id)) {
@@ -417,8 +628,6 @@ router.get('/attempts', async (req, res) => {
 // ============================================================
 // QUIZZES — CRUD
 // ============================================================
-
-// GET /api/admin/quizzes — list
 router.get('/quizzes', async (req, res) => {
   try {
     const { page, limit, skip } = parsePagination(req.query);
@@ -451,8 +660,7 @@ router.get('/quizzes', async (req, res) => {
   }
 });
 
-// GET /api/admin/quizzes/:id — single quiz (admin view)
-router.get('/quizzes/:id', async (req, res) => {   // ← NEW
+router.get('/quizzes/:id', async (req, res) => {
   try {
     if (!mongoose.isValidObjectId(req.params.id)) {
       return fail(res, 400, 'Invalid quiz id', 'INVALID_ID');
@@ -486,7 +694,6 @@ router.get('/quizzes/:id', async (req, res) => {   // ← NEW
   }
 });
 
-// POST /api/admin/quizzes — create
 router.post('/quizzes', async (req, res) => {
   try {
     const b = req.body || {};
@@ -552,7 +759,6 @@ router.post('/quizzes', async (req, res) => {
   }
 });
 
-// PATCH /api/admin/quizzes/:id — update
 router.patch('/quizzes/:id', async (req, res) => {
   try {
     if (!mongoose.isValidObjectId(req.params.id)) {
@@ -583,7 +789,6 @@ router.patch('/quizzes/:id', async (req, res) => {
   }
 });
 
-// DELETE /api/admin/quizzes/:id — unpublish
 router.delete('/quizzes/:id', async (req, res) => {
   try {
     if (!mongoose.isValidObjectId(req.params.id)) {

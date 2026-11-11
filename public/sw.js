@@ -1,5 +1,5 @@
 // public/sw.js — Service Worker
-const CACHE_VERSION = 'kh-v28';
+const CACHE_VERSION = 'kh-v30';
 const SHELL_CACHE = `${CACHE_VERSION}-shell`;
 const ASSET_CACHE = `${CACHE_VERSION}-assets`;
 const API_CACHE   = `${CACHE_VERSION}-api`;

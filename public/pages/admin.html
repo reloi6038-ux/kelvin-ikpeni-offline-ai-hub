@@ -85,6 +85,10 @@
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
             New Subject
           </button>
+          <button class="ad-nav-btn" data-view="import">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Import from PDF
+          </button>
           <button class="ad-nav-btn" data-view="content">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16v16H4z"/><path d="M4 10h16M10 4v16"/></svg>
             Manage Content
@@ -272,6 +276,104 @@
               </div>
               <button type="submit" class="ad-submit-btn">Create Subject</button>
             </form>
+          </div>
+        </div>
+
+        <!-- Import from PDF -->
+        <div data-panel="import" hidden>
+          <div class="ad-panel-header">
+            <p class="ad-panel-eyebrow">AI-Assisted</p>
+            <h1 class="ad-panel-title">Import from PDF</h1>
+            <p class="ad-panel-sub">Upload a curriculum PDF or .docx. AI extracts the lesson and quiz — you review before publishing.</p>
+          </div>
+
+          <div class="ad-card" id="import-upload-step">
+            <form id="import-form" class="ad-form">
+              <div class="ad-form-row">
+                <label class="ad-form-label" for="import-subject">Subject</label>
+                <select id="import-subject" class="ad-form-select" required>
+                  <option value="">Select subject…</option>
+                </select>
+              </div>
+              <div class="ad-form-row">
+                <label class="ad-form-label" for="import-level">Class level</label>
+                <select id="import-level" class="ad-form-select" required>
+                  <option value="JSS1">JSS1</option>
+                  <option value="JSS2" selected>JSS2</option>
+                  <option value="JSS3">JSS3</option>
+                  <option value="SS1">SS1</option>
+                  <option value="SS2">SS2</option>
+                  <option value="SS3">SS3</option>
+                </select>
+              </div>
+              <div class="ad-form-row">
+                <label class="ad-form-label" for="import-file">Curriculum document (PDF or .docx, max 10MB)</label>
+                <div id="import-dropzone" style="border: 2px dashed #cbd5e1; border-radius: 12px; padding: 32px; text-align: center; cursor: pointer; background: #f8fafc; transition: border-color 160ms, background 160ms;">
+                  <div style="font-size: 2rem; margin-bottom: 8px;">📄</div>
+                  <div style="font-weight: 600; margin-bottom: 4px;">Click to choose or drag a file here</div>
+                  <div style="font-size: 0.8rem; color: #64748b;" id="import-filename">PDF or .docx</div>
+                  <input type="file" id="import-file" accept=".pdf,.docx,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document" style="display: none;">
+                </div>
+              </div>
+              <button type="submit" class="ad-submit-btn" id="import-submit-btn">
+                ⬆ Upload & extract
+              </button>
+            </form>
+            <div id="import-error" hidden style="margin-top: 16px; padding: 12px 16px; background: #fef2f2; border: 1px solid #fecaca; border-radius: 10px; font-size: 0.85rem; color: #991b1b;"></div>
+            <div id="import-progress" hidden style="margin-top: 16px; text-align: center;">
+              <div style="font-size: 0.9rem; color: #64748b; margin-bottom: 8px;">Extracting text and structuring with AI… this can take 15–30 seconds.</div>
+              <div style="height: 6px; background: #e2e8f0; border-radius: 999px; overflow: hidden;">
+                <div id="import-progress-bar" style="height: 100%; width: 30%; background: linear-gradient(90deg, #2dd4bf, #14b8a6); border-radius: 999px; animation: importProgress 2s ease-in-out infinite;"></div>
+              </div>
+              <style>@keyframes importProgress { 0%,100%{margin-left:0} 50%{margin-left:70%} }</style>
+            </div>
+          </div>
+
+          <div class="ad-card" id="import-preview-step" hidden>
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:8px;">
+              <h2 style="margin:0;">Review extracted content</h2>
+              <span id="import-provider-badge" class="ad-badge" style="background:#dbeafe;color:#1e40af;">Extraction</span>
+            </div>
+
+            <div class="ad-form-row">
+              <label class="ad-form-label" for="preview-title">Title</label>
+              <input type="text" id="preview-title" class="ad-form-input" required>
+            </div>
+            <div class="ad-form-row">
+              <label class="ad-form-label" for="preview-summary">Summary</label>
+              <input type="text" id="preview-summary" class="ad-form-input" maxlength="400">
+            </div>
+            <div class="ad-form-row">
+              <label class="ad-form-label" for="preview-content">Content (HTML)</label>
+              <textarea id="preview-content" class="ad-form-textarea" style="min-height:200px;" required></textarea>
+            </div>
+            <div class="ad-form-row">
+              <label class="ad-form-label" for="preview-keypoints">Key points (one per line)</label>
+              <textarea id="preview-keypoints" class="ad-form-textarea" style="min-height:80px;"></textarea>
+            </div>
+            <div class="ad-form-row">
+              <label class="ad-form-label" for="preview-source">Source reference</label>
+              <input type="text" id="preview-source" class="ad-form-input">
+            </div>
+
+            <div style="margin-top:24px;padding-top:20px;border-top:1px solid #e2e8f0;">
+              <h3 style="font-size:1rem;margin:0 0 12px;">Generated quiz</h3>
+              <div id="preview-quiz"><p style="color:#64748b;font-size:0.85rem;">No quiz generated</p></div>
+            </div>
+
+            <div class="ad-form-checkbox-row" style="margin-top:24px;">
+              <input type="checkbox" id="preview-publish" checked>
+              <label for="preview-publish">Publish immediately</label>
+            </div>
+            <div class="ad-form-checkbox-row">
+              <input type="checkbox" id="preview-create-pack" checked>
+              <label for="preview-create-pack">Also create a downloadable learning pack</label>
+            </div>
+
+            <div style="display:flex;gap:12px;margin-top:24px;flex-wrap:wrap;">
+              <button type="button" class="ad-submit-btn" id="preview-approve-btn">✅ Approve & save</button>
+              <button type="button" class="ad-table-btn" id="preview-cancel-btn">Cancel</button>
+            </div>
           </div>
         </div>
 
