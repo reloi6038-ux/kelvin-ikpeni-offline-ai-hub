@@ -35,7 +35,6 @@
   </header>
 
   <main id="main">
-    <!-- HERO -->
     <section class="at-hero">
       <div class="container">
         <div class="at-hero-inner">
@@ -50,13 +49,11 @@
       </div>
     </section>
 
-    <!-- LOADING -->
     <div id="tutor-loading" class="at-loading">
       <div class="at-spinner" aria-hidden="true"></div>
       <p>Loading your lessons…</p>
     </div>
 
-    <!-- EMPTY -->
     <div id="tutor-empty" class="at-empty" hidden>
       <div class="at-empty-icon" aria-hidden="true">📚</div>
       <h2 class="at-empty-title">No lessons downloaded yet</h2>
@@ -64,10 +61,8 @@
       <a class="btn btn-primary" href="/pages/download-center.html">Browse packs</a>
     </div>
 
-    <!-- SHELL -->
     <div id="tutor-shell" class="at-shell-wrap" hidden>
       <div class="at-shell">
-        <!-- Sidebar -->
         <aside class="at-sidebar" aria-label="Choose a lesson">
           <div class="at-sidebar-head">
             <h2 class="at-sidebar-title">Your lessons</h2>
@@ -83,7 +78,6 @@
           <div class="at-lesson-list" id="lesson-list"></div>
         </aside>
 
-        <!-- Main panel -->
         <section class="at-main" aria-label="Tutor conversation">
           <div class="at-main-head" id="main-head">
             <div class="at-main-head-empty" id="main-head-empty">
@@ -102,17 +96,14 @@
             </div>
           </div>
 
-          <!-- Empty state (before lesson selected) -->
           <div class="at-empty-hero" id="main-empty-hero">
             <div class="at-empty-icon" aria-hidden="true">✨</div>
             <h2 class="at-empty-title">Select a lesson to begin</h2>
             <p class="at-empty-sub">Once you pick a lesson, you can ask the tutor to explain it, give examples, or quiz you — using only what's in that lesson.</p>
           </div>
 
-          <!-- Conversation -->
           <div class="at-conversation" id="conversation" hidden></div>
 
-          <!-- Input bar -->
           <div class="at-input-bar" id="input-bar" hidden>
             <div class="at-input-wrap">
               <textarea class="at-input" id="tutor-question" placeholder="Ask anything about this lesson…" rows="1" maxlength="400" disabled></textarea>
@@ -128,6 +119,7 @@
                 Ask →
               </button>
             </div>
+            <div id="voice-pack-container"></div>
             <p class="voice-status" id="tutor-voice-status" aria-live="polite"></p>
             <p class="at-input-hint">Answers come from your downloaded lesson. Press Enter to send · Shift+Enter for a new line.</p>
           </div>
@@ -158,6 +150,7 @@
   <script src="/js/offline-db.js"></script>
   <script src="/js/connectivity.js"></script>
   <script src="/js/voice.js"></script>
+  <script src="/js/voice-pack.js"></script>
   <script src="/js/tutor.js"></script>
 </body>
 </html>

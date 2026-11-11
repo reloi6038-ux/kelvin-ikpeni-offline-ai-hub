@@ -34,13 +34,11 @@
     </div>
   </header>
 
-  <!-- Reading progress -->
   <div class="lib-reading-progress" id="lib-reading-progress" hidden>
     <div class="lib-reading-fill" id="lib-reading-fill"></div>
   </div>
 
   <main id="main">
-    <!-- LANDING VIEW -->
     <div id="lib-home-view">
       <section class="lib-hero">
         <div class="container">
@@ -105,9 +103,7 @@
       </section>
     </div>
 
-    <!-- READER VIEW -->
     <div id="lib-reader-view" class="lib-reader" hidden>
-      <!-- Sidebar -->
       <aside class="lib-reader-sidebar" id="lib-reader-sidebar">
         <div class="lib-reader-sidebar-head">
           <button class="lib-back-btn" id="lib-back-btn">
@@ -130,7 +126,6 @@
         </div>
       </aside>
 
-      <!-- Article -->
       <article class="lib-reader-content">
         <div class="lib-content-inner">
           <header class="lib-article-head">
@@ -147,7 +142,6 @@
         </div>
       </article>
 
-      <!-- Tutor -->
       <aside class="lib-reader-tutor" id="lib-reader-tutor">
         <div class="lib-tutor-head">
           <div class="lib-tutor-icon">✨</div>
@@ -213,6 +207,7 @@
                   </svg>
                 </button>
               </div>
+              <div id="voice-pack-container"></div>
               <p class="voice-status" id="lib-voice-status" aria-live="polite"></p>
               <p class="lib-tutor-hint">The tutor only answers from this lesson. Tap the mic to speak.</p>
             </div>
@@ -233,7 +228,6 @@
     </div>
   </main>
 
-  <!-- Floating action bar (desktop only) -->
   <div class="lib-fab-bar" id="lib-fab-bar" hidden>
     <button class="lib-fab is-primary" id="lib-fab-ai">✨ Ask AI</button>
     <button class="lib-fab" id="lib-fab-quiz">✏️ Quiz</button>
@@ -262,6 +256,7 @@
   <script src="/js/offline-db.js"></script>
   <script src="/js/connectivity.js"></script>
   <script src="/js/voice.js"></script>
+  <script src="/js/voice-pack.js"></script>
   <script src="/js/library.js"></script>
 </body>
 </html>

@@ -1,5 +1,5 @@
 // public/sw.js — Service Worker
-const CACHE_VERSION = 'kh-v30';
+const CACHE_VERSION = 'kh-v31';
 const SHELL_CACHE = `${CACHE_VERSION}-shell`;
 const ASSET_CACHE = `${CACHE_VERSION}-assets`;
 const API_CACHE   = `${CACHE_VERSION}-api`;
@@ -37,6 +37,7 @@ const PRECACHE_ASSETS = [
   '/js/offline-db.js',
   '/js/connectivity.js',
   '/js/voice.js',
+  '/js/voice-pack.js',
   '/js/library.js',
   '/js/tutor.js',
   '/js/download.js',
@@ -49,7 +50,6 @@ const PRECACHE_ASSETS = [
   '/assets/icon-maskable-512.png'
 ];
 
-// ---------- Install ----------
 self.addEventListener('install', (event) => {
   event.waitUntil(
     (async () => {
@@ -62,7 +62,6 @@ self.addEventListener('install', (event) => {
   );
 });
 
-// ---------- Activate ----------
 self.addEventListener('activate', (event) => {
   event.waitUntil(
     (async () => {
@@ -75,7 +74,6 @@ self.addEventListener('activate', (event) => {
   );
 });
 
-// ---------- Fetch ----------
 self.addEventListener('fetch', (event) => {
   const req = event.request;
   const url = new URL(req.url);
@@ -83,29 +81,24 @@ self.addEventListener('fetch', (event) => {
   if (url.origin !== self.location.origin) return;
   if (url.pathname === '/sw.js') return;
 
-  // API: network-first
   if (url.pathname.startsWith('/api/')) {
     if (req.method === 'GET') {
       event.respondWith(networkFirst(req, API_CACHE));
     }
-    // POST/PATCH/DELETE pass through to network (KH_SYNC handles retries)
     return;
   }
 
-  // HTML pages: shell-with-background-revalidation
   if (req.method === 'GET' && (req.headers.get('accept') || '').includes('text/html')) {
     event.respondWith(shellStrategy(req));
     return;
   }
 
-  // Static assets: cache-first
   if (req.method === 'GET' && isStaticAsset(url.pathname)) {
     event.respondWith(cacheFirst(req, ASSET_CACHE));
     return;
   }
 });
 
-// ---------- Strategies ----------
 async function shellStrategy(req) {
   const cache = await caches.open(SHELL_CACHE);
   const cached = await cache.match(req);
@@ -162,7 +155,6 @@ async function offlineFallback() {
   );
 }
 
-// ---------- Helpers ----------
 function isStaticAsset(pathname) {
   return (
     pathname.startsWith('/css/') ||
@@ -177,7 +169,6 @@ function isStaticAsset(pathname) {
   );
 }
 
-// ---------- Message channel ----------
 self.addEventListener('message', (event) => {
   const data = event.data || {};
   if (data.type === 'skip-waiting') self.skipWaiting();

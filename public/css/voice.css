@@ -1,4 +1,4 @@
-/* public/css/voice.css — Voice input UI */
+/* public/css/voice.css — Voice input + voice pack UI */
 
 .voice-mic-btn {
   position: relative;
@@ -63,108 +63,76 @@
   font-weight: 600;
 }
 
-.voice-transcript {
-  padding: 8px 12px;
-  background: #f0fdf4;
-  border: 1px solid #bbf7d0;
-  border-radius: var(--radius);
-  font-size: 0.85rem;
-  color: #166534;
-  margin-bottom: 8px;
+/* Voice pack download button */
+.voice-pack-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  background: #f8fafc;
+  border: 1px dashed #cbd5e1;
+  border-radius: 10px;
+  margin-top: 8px;
 }
-.voice-transcript::before {
-  content: "You said: ";
-  font-weight: 600;
-  color: #166534;
+.voice-pack-icon {
+  font-size: 1.4rem;
+  flex-shrink: 0;
+}
+.voice-pack-body {
+  flex: 1;
+  min-width: 0;
+}
+.voice-pack-title {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--text);
+  margin: 0 0 2px;
+}
+.voice-pack-desc {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  margin: 0;
+  line-height: 1.4;
+}
+.voice-pack-btn {
+  padding: 8px 14px;
+  background: var(--brand-deep);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 160ms;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.voice-pack-btn:hover {
+  background: #1a3a44;
+}
+.voice-pack-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.voice-pack-btn.is-ready {
+  background: #16a34a;
 }
 
-/* Modal overlay for recording (blocks interaction while capturing) */
-.voice-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(15, 32, 39, 0.85);
-  backdrop-filter: blur(8px);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 500;
-  padding: 24px;
-  animation: voiceFadeIn 200ms ease;
+.voice-pack-progress {
+  margin-top: 6px;
+  height: 4px;
+  background: #e2e8f0;
+  border-radius: 999px;
+  overflow: hidden;
 }
-@keyframes voiceFadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-.voice-overlay-content {
-  text-align: center;
-  color: #fff;
-  max-width: 400px;
-}
-.voice-overlay-mic {
-  width: 96px;
-  height: 96px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, #2dd4bf, #14b8a6);
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  margin-bottom: 24px;
-  animation: voicePulse 1.2s ease-in-out infinite;
-}
-.voice-overlay-mic svg {
-  width: 48px;
-  height: 48px;
-  color: #fff;
-}
-.voice-overlay-title {
-  font-size: 1.3rem;
-  font-weight: 700;
-  margin: 0 0 8px;
-}
-.voice-overlay-sub {
-  color: rgba(255, 255, 255, 0.75);
-  margin: 0 0 24px;
-  font-size: 0.95rem;
-}
-.voice-overlay-transcript {
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: var(--radius);
-  padding: 16px;
-  font-size: 1rem;
-  min-height: 48px;
-  color: #fff;
-  margin-bottom: 24px;
-  line-height: 1.5;
-}
-.voice-overlay-actions {
-  display: flex;
-  gap: 12px;
-  justify-content: center;
-}
-.voice-overlay-actions button {
-  padding: 12px 24px;
-  border-radius: var(--radius);
-  font-weight: 600;
-  cursor: pointer;
-  border: none;
-  font-size: 0.9rem;
-  transition: transform 120ms ease;
-}
-.voice-overlay-actions button:active {
-  transform: scale(0.96);
-}
-.voice-overlay-stop {
-  background: #dc2626;
-  color: #fff;
-}
-.voice-overlay-cancel {
-  background: rgba(255, 255, 255, 0.15);
-  color: #fff;
-  border: 1px solid rgba(255, 255, 255, 0.25);
+.voice-pack-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #2dd4bf, #14b8a6);
+  width: 0%;
+  transition: width 200ms ease;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .voice-mic-btn.is-listening,
-  .voice-overlay-mic { animation: none; }
-  .voice-overlay { animation: none; }
+  .voice-mic-btn.is-listening { animation: none; }
 }
+html.data-saver .voice-mic-btn.is-listening { animation: none; }

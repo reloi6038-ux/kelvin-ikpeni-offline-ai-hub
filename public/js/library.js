@@ -689,6 +689,12 @@
     });
   }
 
+
+    // Render voice pack button (if needed)
+  if (window.KH_VOICE_PACK) {
+    window.KH_VOICE_PACK.renderVoicePack('voice-pack-container');
+  }
+
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
   else init();
 })();

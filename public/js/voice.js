@@ -1,40 +1,88 @@
-// public/js/voice.js — Voice input (online Web Speech API + offline Whisper WASM)
+// public/js/voice.js — Voice input (native online + Whisper-tiny int8 offline)
 (function () {
   'use strict';
 
   const state = {
-    mode: 'idle',           // idle | listening | transcribing | error
-    browserSupport: null,   // 'native' | 'whisper' | null
+    mode: 'idle',
+    browserSupport: null,
     recognition: null,
     mediaRecorder: null,
     audioChunks: [],
     whisperPipeline: null,
     whisperLoading: false,
-    whisperProgress: 0
+    whisperProgress: 0,
+    whisperError: null,
+    modelReady: false
   };
 
-  // ------------------------------------------------------------------
-  // Detect capabilities
-  // ------------------------------------------------------------------
+  const MODEL_CACHE_KEY = 'kh_whisper_ready';
+
   function detectSupport() {
     if (window.SpeechRecognition || window.webkitSpeechRecognition) {
       state.browserSupport = 'native';
-      return;
-    }
-    if (navigator.mediaDevices && window.WebAssembly) {
+    } else if (navigator.mediaDevices && window.WebAssembly) {
       state.browserSupport = 'whisper';
-      return;
+    } else {
+      state.browserSupport = null;
     }
-    state.browserSupport = null;
+    if (localStorage.getItem(MODEL_CACHE_KEY) === '1') {
+      state.modelReady = true;
+    }
   }
 
   // ------------------------------------------------------------------
-  // Public: start listening (online → native, offline → whisper)
+  // Preload Whisper (callable from UI download button)
+  // ------------------------------------------------------------------
+  async function preloadWhisper(onProgress) {
+    if (state.whisperPipeline) return state.whisperPipeline;
+    if (state.whisperLoading) throw new Error('Model is already loading');
+
+    state.whisperLoading = true;
+    state.whisperError = null;
+    state.whisperProgress = 0;
+
+    try {
+      if (onProgress) onProgress(0, 'Loading model library…');
+
+      const { pipeline, env } = await import('https://cdn.jsdelivr.net/npm/@xenova/transformers@2.17.2');
+      env.allowRemoteModels = true;
+      env.useBrowserCache = true;
+
+      if (onProgress) onProgress(5, 'Starting download…');
+
+      state.whisperPipeline = await pipeline(
+        'automatic-speech-recognition',
+        'Xenova/whisper-tiny.en',
+        {
+          quantized: true,
+          progress_callback: (p) => {
+            if (p.status === 'progress' && p.total) {
+              const pct = Math.round((p.loaded / p.total) * 100);
+              state.whisperProgress = pct;
+              if (onProgress) onProgress(pct, `Downloading: ${pct}%`);
+            }
+          }
+        }
+      );
+
+      state.modelReady = true;
+      localStorage.setItem(MODEL_CACHE_KEY, '1');
+      if (onProgress) onProgress(100, 'Voice model ready');
+      return state.whisperPipeline;
+    } catch (err) {
+      state.whisperError = err.message || 'Model download failed';
+      throw err;
+    } finally {
+      state.whisperLoading = false;
+    }
+  }
+
+  // ------------------------------------------------------------------
+  // Start listening
   // ------------------------------------------------------------------
   async function startListening(onResult, onError, onStateChange) {
     if (!state.browserSupport) {
-      const err = 'Voice input not supported on this device.';
-      if (onError) onError(err);
+      if (onError) onError('Voice input not supported on this device.');
       return;
     }
 
@@ -81,11 +129,8 @@
       let interim = '';
       for (let i = event.resultIndex; i < event.results.length; i++) {
         const transcript = event.results[i][0].transcript;
-        if (event.results[i].isFinal) {
-          finalTranscript += transcript;
-        } else {
-          interim += transcript;
-        }
+        if (event.results[i].isFinal) finalTranscript += transcript;
+        else interim += transcript;
       }
       if (onStateChange) onStateChange('listening', finalTranscript + interim);
     };
@@ -120,36 +165,23 @@
   }
 
   // ------------------------------------------------------------------
-  // Whisper WASM (offline, one-time 40MB download)
+  // Whisper WASM (offline, ~10MB int8 model)
   // ------------------------------------------------------------------
   async function startWhisperListening(onResult, onError, onStateChange) {
     try {
-      // Load model if not loaded
       if (!state.whisperPipeline) {
-        state.whisperLoading = true;
+        if (!state.modelReady) {
+          if (onError) onError('Voice pack not downloaded yet. Tap "Download voice pack" first.');
+          if (onStateChange) onStateChange('needs-download');
+          return;
+        }
         state.mode = 'transcribing';
-        if (onStateChange) onStateChange('loading', 'Loading offline speech model (first time only, ~40MB)…');
-
-        const { pipeline, env } = await import('https://cdn.jsdelivr.net/npm/@xenova/transformers@2.17.2');
-        env.allowRemoteModels = true;
-        env.useBrowserCache = true;
-
-        state.whisperPipeline = await pipeline(
-          'automatic-speech-recognition',
-          'Xenova/whisper-tiny.en',
-          {
-            progress_callback: (p) => {
-              if (p.status === 'progress' && p.total) {
-                state.whisperProgress = Math.round((p.loaded / p.total) * 100);
-                if (onStateChange) onStateChange('loading', `Loading model: ${state.whisperProgress}%`);
-              }
-            }
-          }
-        );
-        state.whisperLoading = false;
+        if (onStateChange) onStateChange('loading', 'Preparing offline voice…');
+        await preloadWhisper((pct, msg) => {
+          if (onStateChange) onStateChange('loading', msg);
+        });
       }
 
-      // Record audio
       state.mode = 'listening';
       if (onStateChange) onStateChange('listening');
 
@@ -171,7 +203,10 @@
         try {
           const audioBlob = new Blob(state.audioChunks, { type: 'audio/webm' });
           const audioBuffer = await decodeAudio(audioBlob);
-          const result = await state.whisperPipeline(audioBuffer);
+          const result = await state.whisperPipeline(audioBuffer, {
+            language: 'english',
+            task: 'transcribe'
+          });
           const text = (result.text || '').trim();
 
           if (text) {
@@ -195,7 +230,7 @@
         if (state.mediaRecorder && state.mediaRecorder.state === 'recording') {
           state.mediaRecorder.stop();
         }
-      }, 8000);  // auto-stop after 8 seconds
+      }, 8000);
 
     } catch (err) {
       state.mode = 'error';
@@ -204,13 +239,11 @@
     }
   }
 
-  // Decode audio blob to 16kHz mono Float32Array (Whisper requirement)
   async function decodeAudio(blob) {
     const arrayBuffer = await blob.arrayBuffer();
     const audioContext = new (window.AudioContext || window.webkitAudioContext)({ sampleRate: 16000 });
     const decoded = await audioContext.decodeAudioData(arrayBuffer);
-    const channelData = decoded.getChannelData(0);
-    return channelData;
+    return decoded.getChannelData(0);
   }
 
   // ------------------------------------------------------------------
@@ -221,8 +254,17 @@
   window.KH_VOICE = {
     isSupported: () => state.browserSupport !== null,
     getMode: () => state.browserSupport,
+    getState: () => state.mode,
+    isModelReady: () => state.modelReady,
+    isModelLoading: () => state.whisperLoading,
+    getProgress: () => state.whisperProgress,
+    preloadWhisper,
     startListening,
     stopListening,
-    getState: () => state.mode
+    clearModelCache: () => {
+      localStorage.removeItem(MODEL_CACHE_KEY);
+      state.modelReady = false;
+      state.whisperPipeline = null;
+    }
   };
 })();
